@@ -2,7 +2,7 @@ const rimraf = require('rimraf');
 
 const { resolve, join } = require('path');
 
-if (!(proces.env.APP_ROOT_PATH)) {
+if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
 }
 
