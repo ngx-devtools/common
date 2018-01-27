@@ -1,0 +1,28 @@
+{
+  "name": "@ngx-devtools/common",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngx-devtools/common.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ngx-devtools/common/issues"
+  },
+  "homepage": "https://github.com/ngx-devtools/common#readme",
+  "dependencies": {
+    "gulp-inline-ng2-template": "4.1.0",
+    "gulp-base64-inline": "1.0.3",
+    "html-minifier": "3.5.8",
+    "node-sass": "4.7.2",
+    "rimraf": "2.6.2",
+    "glob-all": "3.1.0",
+    "typescript": "2.6.2"
+  }
+}
