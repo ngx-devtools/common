@@ -13,4 +13,6 @@ exports.rimraf = async (folderName) => {
   });
 };
 
+exports.streamToPromise = require('./utils/stream-to-promise');
+
 exports.ng2InlineTemplate = require('./utils/ng2-inline-template');
