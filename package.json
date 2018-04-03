@@ -20,10 +20,10 @@
     "glob-all": "3.1.0",
     "gulp-base64-inline": "1.0.3",
     "gulp-inline-ng2-template": "4.1.0",
-    "html-minifier": "3.5.9",
-    "node-sass": "4.7.2",
+    "html-minifier": "3.5.13",
+    "node-sass": "4.8.3",
     "rimraf": "2.6.2",
-    "typescript": "2.6.2",
+    "typescript": "2.7.2",
     "vinyl-fs": "3.0.2"
   }
 }
