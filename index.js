@@ -11,11 +11,15 @@ const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
 const ng2InlineTemplate = require('./utils/ng2-inline-template')
 const copyFiles = require('./utils/copy-files');
+const watcher = require('./utils/watcher');
+const walkSync = require('./utils/walk-dir').walkSync;
+const concatAsync = require('./utils/concat');
 
 exports.deleteFolderAsync = (folderName, hasInfo = true) => {
   return (hasInfo) ? deleteFolderAsync(folderName) : rimraf;
 };
 
+exports.watcher = watcher;
 exports.copyFiles = copyFiles;
 exports.rimraf = rimraf;
 exports.startAsync = startAsync;
@@ -23,3 +27,7 @@ exports.doneAsync = doneAsync;
 exports.streamToPromise = streamToPromise;
 exports.devtools = devtools;
 exports.ng2InlineTemplate = ng2InlineTemplate;
+exports.walkSync = walkSync;
+exports.concatAsync = concatAsync;
+
+
