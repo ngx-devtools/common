@@ -1,6 +1,8 @@
 const chokidar = require('chokidar');
 const livereload = require('gulp-livereload');
 const util = require('util');
+const fs = require('fs');
+const path = require('path');
 
 const liveReloadParams = [ '--livereload',  '--livereload=true',  '--livereload true'  ];
 const watchParams = [ '--watch', '--watch=true', '--watch true' ];
@@ -38,8 +40,8 @@ const verifyFunction = (onChanged, file) => {
 };
 
 const watcher = ({ files, ignore, onClientFileChanged, onServerFileChanged }) => {
-  let isReady = false;
-  const defaultIgnores = ['node_modules', 'dist', '.git'];
+  let isReady = false, filePaths = [];
+  const defaultIgnores = ['node_modules', 'dist', '.git', '.DS_Store', '.gitignore', 'README.md'];
 
   if (ignore & Array.isArray(ignore)) {
     ignore.forEach(value => {
@@ -48,9 +50,38 @@ const watcher = ({ files, ignore, onClientFileChanged, onServerFileChanged }) =>
       }
     });
   }
+
+  const getFiles = (directories) => {
+    const result = {};
+    Object.keys(directories).forEach(directory => {
+      const values = directories[directory].filter(value => {
+        const file = path.join(directory, value);
+        return (fs.statSync(file).isFile());
+      });
+      values.forEach(value => { 
+        const filePath = path.join(directory, value);
+        Object.assign(result, { [filePath]: fs.statSync(filePath).size });
+      });
+    });
+    return result;
+  };
+
+  const onFileChanged = async (event, file) => { 
+    const filePath = path.resolve(file);
+
+    if (filePaths[filePath] && (filePaths[filePath] === fs.statSync(filePath).size)) {
+      await Promise.resolve();
+    } else {
+      Object.assign(filePaths, { [filePath]: fs.statSync(filePath).size });
+      await Promise.all([ verifyFunction(onClientFileChanged, file), verifyFunction(onServerFileChanged, file) ])
+        .then(() => reloadPage(file))
+        .catch(error => console.log(error)); 
+    }
+  };
    
-  chokidar.watch(files || '.', { ignored: defaultIgnores })
+  const watch = chokidar.watch(files || '.', { ignored: defaultIgnores })
     .on(WATCH_EVENT.READY, () => {
+      filePaths = getFiles(watch.getWatched());
       isReady = true;
       console.log('> Initial scan complete. Ready for changes.'); 
     })
@@ -59,10 +90,7 @@ const watcher = ({ files, ignore, onClientFileChanged, onServerFileChanged }) =>
         switch(event) {
           case WATCH_EVENT.ADD:
           case WATCH_EVENT.CHANGE: 
-            Promise.all([ verifyFunction(onClientFileChanged, path), verifyFunction(onServerFileChanged, path) ])
-              .then(() => reloadPage(path))
-              .catch(error => console.log(error)); 
-          break;
+            onFileChanged(event, path); break;
           case WATCH_EVENT.DELETE:
             console.log(`> ${event}: ${path}.`); break;
         }
