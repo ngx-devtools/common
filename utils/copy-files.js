@@ -8,20 +8,10 @@ const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 
 const { walkSync } = require('./walk-dir');
-
-const getDir = (src) => {
-  const sourceFiles = (Array.isArray(src)) ? src : [ src ];
-  return sourceFiles.map(file => {
-    return { 
-      dir: path.dirname(file).replace('/**', ''),
-      isRecursive: file.includes('**'),
-      includes: [ path.extname(file) ]
-    };
-  })
-};
+const { getFiles } = require('./file');
 
 const getSource = (file) => {
-  return file.replace(path.resolve() + '/', '').split('/')[0];
+  return file.replace(/\/$/, '').replace(path.resolve() + '/', '').split('/')[0];
 };
 
 const copyFileAsync = (file, dest) => {
@@ -37,10 +27,6 @@ const copyFilesAsync = (files, dest) => {
 };
 
 module.exports = (src = [], dest) => {
-  const files = getDir(src).map(directory => walkSync({ 
-    dir: directory.dir, 
-    isRecursive: directory.isRecursive, 
-    includes: directory.includes 
-  }));
+  const files = getFiles(src);
   return Promise.all(files.map(file => copyFilesAsync(file, dest)));
 };

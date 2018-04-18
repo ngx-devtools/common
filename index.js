@@ -7,6 +7,9 @@ if (!(process.env.APP_ROOT_PATH)) {
 const { rimraf, deleteFolderAsync } = require('./utils/rimraf');
 const { startAsync, doneAsync } = require('./utils/info');
 
+const { getFiles } = require('./utils/file');
+const { inlineResources, inlineResourcesFromString } = require('./utils/inline-resources');
+
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
 const ng2InlineTemplate = require('./utils/ng2-inline-template')
@@ -14,11 +17,14 @@ const copyFiles = require('./utils/copy-files');
 const watcher = require('./utils/watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
 const concatAsync = require('./utils/concat');
+const mkdirp = require('./utils/mkdirp');
 
 exports.deleteFolderAsync = (folderName, hasInfo = true) => {
   return (hasInfo) ? deleteFolderAsync(folderName) : rimraf;
 };
 
+exports.mkdirp = mkdirp;
+exports.getFiles = getFiles;
 exports.watcher = watcher;
 exports.copyFiles = copyFiles;
 exports.rimraf = rimraf;
@@ -29,5 +35,7 @@ exports.devtools = devtools;
 exports.ng2InlineTemplate = ng2InlineTemplate;
 exports.walkSync = walkSync;
 exports.concatAsync = concatAsync;
+exports.inlineResources = inlineResources;
+exports.inlineResourcesFromString = inlineResourcesFromString;
 
 

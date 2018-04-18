@@ -41,7 +41,17 @@ const verifyFunction = (onChanged, file) => {
 
 const watcher = ({ files, ignore, onClientFileChanged, onServerFileChanged }) => {
   let isReady = false, filePaths = [];
-  const defaultIgnores = ['node_modules', 'dist', '.git', '.DS_Store', '.gitignore', 'README.md'];
+  const defaultIgnores = [
+    'node_modules/**', 
+    'node_modules/.tmp/**',
+    'dist/**', 
+    '.git/**', 
+    '.DS_Store', 
+    '.gitignore', 
+    'README.md', 
+    '.tmp/**', 
+    'temp/**'
+  ];
 
   if (ignore & Array.isArray(ignore)) {
     ignore.forEach(value => {
