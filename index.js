@@ -8,7 +8,12 @@ const { rimraf, deleteFolderAsync } = require('./utils/rimraf');
 const { startAsync, doneAsync } = require('./utils/info');
 
 const { getFiles } = require('./utils/file');
-const { inlineResources, inlineResourcesFromString } = require('./utils/inline-resources');
+const { 
+  inlineResources, 
+  inlineResourcesFromString, 
+  copyFileAsync, 
+  copyFilesAsync 
+} = require('./utils/inline-resources');
 
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
@@ -37,5 +42,7 @@ exports.walkSync = walkSync;
 exports.concatAsync = concatAsync;
 exports.inlineResources = inlineResources;
 exports.inlineResourcesFromString = inlineResourcesFromString;
+exports.copyFilesAsync = copyFilesAsync;
+exports.copyFileAsync = copyFileAsync;
 
 

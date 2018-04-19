@@ -82,13 +82,18 @@ const copyFileAsync = (file, dest) => {
   mkdirp(path.dirname(destPath));
   return readFileAsync(file, 'utf8')
     .then(content => inlineResourcesFromString(content, url => path.join(path.dirname(file), url)))
-    .then(content => writeFileAsync(destPath, content));
+    .then(content => 
+      writeFileAsync(destPath, content)
+        .then(() => Promise.resolve(content))
+    );
 };
 
 const copyFilesAsync = (files, dest) => {
   return Promise.all(files.map(file => copyFileAsync(file, dest)));
 };
 
+exports.copyFilesAsync = copyFilesAsync;
+exports.copyFileAsync = copyFileAsync;
 exports.inlineResourcesFromString = inlineResourcesFromString;
 exports.inlineResources = (src, dest) => {
   const files = getFiles(src);
