@@ -7,15 +7,7 @@ const path = require('path');
 const liveReloadParams = [ '--livereload',  '--livereload=true',  '--livereload true'  ];
 const watchParams = [ '--watch', '--watch=true', '--watch true' ];
 
-const isProcess = (list) => {
-  let result = false;
-  const index = process.argv.findIndex(value => list.includes(value));
-  const isBoolean = (process.argv[index + 1] === 'true' || process.argv[index + 1] === 'false');
-  if (index >= 0) {
-    if (isBoolean || process.argv[index + 1] !== 'false') result = true;
-  }
-  return result;
-};
+const { isProcess } = require('./check-args');
 
 const WATCH_EVENT = {
   ADD: 'add', CHANGE: 'change', DELETE: 'unlink', READY: 'ready'
