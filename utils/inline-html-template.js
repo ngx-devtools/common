@@ -1,7 +1,9 @@
 const fs = require('fs');
-const path = require('path');
-const htmlMinifier = require('html-minifier');
 
+/**
+ * Inline html template
+ * @param {environment mode} envMode 
+ */
 const inlineTemplate = (envMode) => {
   return (content, urlResolver) => {
     return content.replace(/templateUrl:\s*'([^']+?\.html)'/g, function (m, templateUrl) {

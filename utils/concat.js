@@ -2,21 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const strip = require('strip-comments');
 
-const promisify = require('util').promisify;
-
-const readFileAsync = promisify(fs.readFile);
-const writeFileAsync = promisify(fs.writeFile);
-
-const readWriteAsync = (filePath) => {
-  return readFileAsync(filePath)
-    .then(fileBuffer => Promise.resolve(fileBuffer.toString('utf8'))); 
-};
+const { readFileAsync, writeFileAsync } = require('./file');
+const mkdirp = require('./mkdirp');
 
 const concatAsync = async (src = [], destFolder, destFileName) => {
   const results = [];
-  require('mkdirp').sync(path.resolve(destFolder));
+  mkdirp(path.resolve(destFolder));
   for (const file of src) {
-    const value = await readWriteAsync(file);
+    const value = await readFileAsync(file, 'utf8');
     results.push(value);
   }
   const filePath =  path.resolve(path.join(destFolder, destFileName));

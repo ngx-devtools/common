@@ -7,14 +7,12 @@ const readFileAsync = promisify(fs.readFile);
 const writeFileAsync  = promisify(fs.writeFile);
 
 const { walkSync } = require('./walk-dir');
-const { getFiles } = require('./file');
+const { getFiles, getSource } = require('./file');
 const { inlineStyle } = require('./inline-style');
 const { isProcess } = require('./check-args');
 
 const inlineTemplate = require('./inline-html-template');
 const mkdirp = require('./mkdirp');
-
-const getSource = (file) => file.replace(/\/$/, '').replace(path.resolve() + '/', '').split('/')[0];
 
 const prodModeParams = [ '--prod',  '--prod=true',  '--prod true'  ];
 
