@@ -7,7 +7,7 @@ if (!(process.env.APP_ROOT_PATH)) {
 const { rimraf, deleteFolderAsync } = require('./utils/rimraf');
 const { startAsync, doneAsync } = require('./utils/info');
 
-const { getFiles, deleteFileAsync, getSource, readFileAsync, writeFileAsync } = require('./utils/file');
+const { getFiles, deleteFileAsync, getSource, readFileAsync, writeFileAsync, readdirAsync } = require('./utils/file');
 const { 
   inlineResources, 
   inlineResourcesFromString, 
@@ -48,3 +48,4 @@ exports.deleteFileAsync = deleteFileAsync;
 exports.getSource = getSource;
 exports.writeFileAsync = writeFileAsync;
 exports.readFileAsync = readFileAsync;
+exports.readdirAsync = readdirAsync;
