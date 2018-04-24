@@ -17,7 +17,6 @@ const {
 
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
-const ng2InlineTemplate = require('./utils/ng2-inline-template')
 const copyFiles = require('./utils/copy-files');
 const watcher = require('./utils/watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
@@ -37,7 +36,6 @@ exports.startAsync = startAsync;
 exports.doneAsync = doneAsync;
 exports.streamToPromise = streamToPromise;
 exports.devtools = devtools;
-exports.ng2InlineTemplate = ng2InlineTemplate;
 exports.walkSync = walkSync;
 exports.concatAsync = concatAsync;
 exports.inlineResources = inlineResources;
