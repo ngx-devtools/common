@@ -18,12 +18,13 @@
   "homepage": "https://github.com/ngx-devtools/common#readme",
   "dependencies": {
     "chokidar": "2.0.3",
+    "fast-memoize": "2.3.2",
     "gulp-livereload": "3.8.1",
+    "mime": "2.3.1",
     "node-sass": "4.8.3",
     "rimraf": "2.6.2",
     "strip-comments": "1.0.1",
     "typescript": "2.8.1",
-    "vinyl-fs": "3.0.2",
-    "mime": "2.3.1"
+    "vinyl-fs": "3.0.2"
   }
 }

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const memoize = require('./memoize');
 
 const mkdirp = (directory) => {
   const dirPath = directory.replace(/\/$/, '').split('/');
@@ -10,4 +11,4 @@ const mkdirp = (directory) => {
   }
 };
 
-module.exports = mkdirp;
+module.exports = memoize(mkdirp);
