@@ -22,6 +22,7 @@ const watcher = require('./utils/watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
 const concatAsync = require('./utils/concat');
 const mkdirp = require('./utils/mkdirp');
+const memoize = require('./utils/memoize');
 
 exports.deleteFolderAsync = (folderName, hasInfo = true) => {
   return (hasInfo) ? deleteFolderAsync(folderName) : rimraf;
@@ -47,3 +48,4 @@ exports.getSource = getSource;
 exports.writeFileAsync = writeFileAsync;
 exports.readFileAsync = readFileAsync;
 exports.readdirAsync = readdirAsync;
+exports.memoize = memoize;

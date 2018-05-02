@@ -21,12 +21,14 @@ const getSource = (file) => file.replace(/\/$/, '').replace(path.resolve() + '/'
 
 const deleteFileAsync = (file) => (fs.existsSync(file)) ? unlinkAsync(file) : Promise.resolve();
 
-const getFiles = src => 
-  getDir(src).map(directory => walkSync({ 
+const getFiles = src => {
+  return getDir(src).map(directory => walkSync({ 
     dir: directory.dir, 
     isRecursive: directory.isRecursive, 
     includes: directory.includes 
   }));
+}
+
 
 exports.deleteFileAsync = deleteFileAsync;
 exports.getFiles = getFiles;
