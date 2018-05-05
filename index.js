@@ -15,6 +15,8 @@ const {
   copyFilesAsync 
 } = require('./utils/inline-resources');
 
+const { isProcess } = require('./utils/check-args');
+
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
 const copyFiles = require('./utils/copy-files');
@@ -49,3 +51,4 @@ exports.writeFileAsync = writeFileAsync;
 exports.readFileAsync = readFileAsync;
 exports.readdirAsync = readdirAsync;
 exports.memoize = memoize;
+exports.isProcess = isProcess;
