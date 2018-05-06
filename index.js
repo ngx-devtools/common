@@ -7,7 +7,7 @@ if (!(process.env.APP_ROOT_PATH)) {
 const { rimraf, deleteFolderAsync } = require('./utils/rimraf');
 const { startAsync, doneAsync } = require('./utils/info');
 
-const { getFiles, deleteFileAsync, getSource, readFileAsync, writeFileAsync, readdirAsync } = require('./utils/file');
+const { getFiles, deleteFileAsync, getSource, readFileAsync, writeFileAsync, readdirAsync, copyFile } = require('./utils/file');
 const { 
   inlineResources, 
   inlineResourcesFromString, 
@@ -19,7 +19,6 @@ const { isProcess } = require('./utils/check-args');
 
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
-const copyFiles = require('./utils/copy-files');
 const watcher = require('./utils/watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
 const concatAsync = require('./utils/concat');
@@ -33,7 +32,7 @@ exports.deleteFolderAsync = (folderName, hasInfo = true) => {
 exports.mkdirp = mkdirp;
 exports.getFiles = getFiles;
 exports.watcher = watcher;
-exports.copyFiles = copyFiles;
+exports.copyFile = copyFile;
 exports.rimraf = rimraf;
 exports.startAsync = startAsync;
 exports.doneAsync = doneAsync;

@@ -17,7 +17,10 @@ const getDir = (src) => {
     })
 };
 
-const getSource = (file) => file.replace(/\/$/, '').replace(path.resolve() + '/', '').split('/')[0];
+const getSource = (file) => 
+  file.replace(path.sep, '')
+    .replace(path.resolve() + path.sep, '')
+    .split(path.sep)[0];
 
 const deleteFileAsync = (file) => (fs.existsSync(file)) ? unlinkAsync(file) : Promise.resolve();
 

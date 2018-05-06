@@ -24,15 +24,25 @@ const inlineResourcesFromString = (content, urlResolver) => {
   .reduce((content, fn) => fn(content, urlResolver), content);
 };
 
+const getTempPath = (file, pkgName) => {
+  const tempSource = `.tmp\/${pkgName}\/src`;
+  return file.replace(path.resolve() + path.sep, '') 
+    .replace('src' + path.sep, '')
+    .replace(pkgName, tempSource)
+    .replace(argv.libs + path.sep, '')
+    .replace(`app`, tempSource);
+}
+
+
 const copyFileAsync = (file, dest) => {
-  const destPath = file.replace(getSource(file), dest);
-  mkdirp(path.dirname(destPath));
+  const destPath = file.replace('src', dest);  
   return readFileAsync(file, 'utf8')
     .then(content => inlineResourcesFromString(content, url => path.join(path.dirname(file), url)))
-    .then(content => 
-      writeFileAsync(destPath, content)
+    .then(content => {
+      mkdirp(path.dirname(destPath))
+      return writeFileAsync(destPath, content)
         .then(() => Promise.resolve(content))
-    );
+    });
 };
 
 const copyFilesAsync = (files, dest) => Promise.all(files.map(file => copyFileAsync(file, dest)));
