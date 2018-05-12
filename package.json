@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -23,8 +23,8 @@
     "mime": "2.3.1",
     "node-sass": "4.9.0",
     "rimraf": "2.6.2",
-    "strip-comments": "1.0.1",
-    "typescript": "2.8.3",
+    "strip-comments": "1.0.2",
+    "typescript": "2.7.2",
     "vinyl-fs": "3.0.2"
   }
 }
