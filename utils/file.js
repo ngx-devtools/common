@@ -32,7 +32,6 @@ const getFiles = src => {
   }));
 }
 
-
 exports.deleteFileAsync = deleteFileAsync;
 exports.getFiles = getFiles;
 exports.getSource = getSource;
@@ -40,3 +39,4 @@ exports.readFileAsync = promisify(fs.readFile);
 exports.writeFileAsync = promisify(fs.writeFile);
 exports.readdirAsync = promisify(fs.readdir);
 exports.copyFile = promisify(fs.copyFile);
+exports.appendFile = promisify(fs.appendFile);

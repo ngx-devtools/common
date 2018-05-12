@@ -21,7 +21,7 @@ const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
 const watcher = require('./utils/watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
-const concatAsync = require('./utils/concat');
+const { concat, concatAsync } = require('./utils/concat');
 const mkdirp = require('./utils/mkdirp');
 const memoize = require('./utils/memoize');
 
@@ -40,6 +40,7 @@ exports.streamToPromise = streamToPromise;
 exports.devtools = devtools;
 exports.walkSync = walkSync;
 exports.concatAsync = concatAsync;
+exports.concat = concat;
 exports.inlineResources = inlineResources;
 exports.inlineResourcesFromString = inlineResourcesFromString;
 exports.copyFilesAsync = copyFilesAsync;
