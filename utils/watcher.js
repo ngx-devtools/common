@@ -42,7 +42,8 @@ const watcher = ({ files, ignore, onClientFileChanged, onServerFileChanged }) =>
     '.gitignore', 
     'README.md', 
     '.tmp/**', 
-    'temp/**'
+    'temp/**',
+    '.rpt2_cache/**'
   ];
 
   if (ignore & Array.isArray(ignore)) {
