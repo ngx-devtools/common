@@ -24,7 +24,6 @@
     "node-sass": "4.9.0",
     "rimraf": "2.6.2",
     "strip-comments": "1.0.2",
-    "typescript": "2.7.2",
-    "vinyl-fs": "3.0.2"
+    "typescript": "2.7.2"
   }
 }
