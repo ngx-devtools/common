@@ -19,7 +19,7 @@ const { isProcess } = require('./utils/check-args');
 
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
-const watcher = require('./utils/watcher');
+const watcher = require('./watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
 const { concat, concatAsync } = require('./utils/concat');
 const mkdirp = require('./utils/mkdirp');
