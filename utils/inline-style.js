@@ -2,6 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const sass = require('node-sass');
 const mime = require('mime');
+const cssbeautify = require('./css-beautify');
+
+const { isProcess } = require('./check-args');
+
+const cssPrettifyParams = [ '--css-pretty',  '--css-pretty=true',  '--css-pretty true'  ];
 
 /**
  * Inline or convert any image to base64 base
@@ -34,6 +39,29 @@ const getContent = (styleUrl, urlResolver) => {
 };
 
 /**
+ * Format the css
+ * @param {styles url} urls 
+ * @param {path or url resolver} urlResolver 
+ */
+const cssPrettify = (urls = [], urlResolver) => {
+  let styleCss = '';
+  const indent = (str) => {
+    var lines = [];
+    var spaces = '';
+    for (var i = 0; i < 4; i++) { spaces += ' '; }
+    str.split('\n').forEach(function (line) {
+      lines.push((/^(\s*)$/.test(line) ? '' : spaces) + line);
+    });
+    return lines.join('\n');
+  }
+  urls.forEach(styleUrl => {
+    const style = '\n' + cssbeautify(getContent(styleUrl, urlResolver), { indent: '  ', autosemicolon: true }) + '\n';
+    styleCss = styleCss + style;
+  });
+  return  'styles: [ `' + indent(styleCss) + '  `]';
+};
+
+/**
  * 
  * @param {css or scss string content} content 
  * @param {} sourceFile 
@@ -60,11 +88,13 @@ const buildSass = (content, sourceFile) => {
 const inlineStyleProdMode = (content, urlResolver) => {
   return content.replace(/styleUrls\s*:\s*(\[[\s\S]*?\])/gm, (m, styleUrls) => {
     const urls = eval(styleUrls);
-    return 'styles: ['
-      + urls.map(styleUrl => `"${ getContent(styleUrl, urlResolver) }"`)
-          .join(',\n')
-          .replace('\n', ' ')
-      + ']';
+    return isProcess(cssPrettifyParams)
+      ? cssPrettify(urls, urlResolver)
+      : 'styles: ['
+        + urls.map(styleUrl => `"${ getContent(styleUrl, urlResolver) }"`)
+            .join(',\n')
+            .replace('\n', ' ')
+        + ']';
   });
 };
 
@@ -75,10 +105,14 @@ const inlineStyleProdMode = (content, urlResolver) => {
  */
 const inlineStyleDevMode = (content, urlResolver) => {
   return content.replace(/styleUrls\s*:\s*(\[[\s\S]*?\])/gm,  (m, styleUrls) => {
-    m = m.replace('styleUrls', 'styles');
     const urls = eval(styleUrls);
-    urls.forEach(styleUrl => m = m.replace(styleUrl, getContent(styleUrl, urlResolver)));
-    return m;
+    return isProcess(cssPrettifyParams) 
+      ? cssPrettify(urls, urlResolver) 
+      : (() => {
+          m = m.replace('styleUrls', 'styles');
+          urls.forEach(styleUrl => m = m.replace(styleUrl, getContent(styleUrl, urlResolver)));
+          return m;
+        })()
   });
 };
 
