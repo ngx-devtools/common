@@ -5,7 +5,7 @@ const { isProcess } = require('./check-args');
 
 const SHIMS = '<!-- shims  -->';
 const SYSTEMJS = '<!-- systemjs -->';
-const LIVERELOAD = '<!-- livereaload -->';
+const LIVERELOAD = '<!-- livereload -->';
 const TITLE = '<!-- title -->';
 
 const DEVTOOLS_CONFIG = require('./devtools')
