@@ -10,6 +10,7 @@ const getFiles = require('./get-files');
 
 const { liveReload } = require('./live-reload');
 const { isProcess } = require('../utils/check-args');
+const { copyFile } = require('../utils/file');
 
 const WATCH_EVENT = require('./events');
 
@@ -35,9 +36,13 @@ const watcher = (options = defaultOptions) => {
     });
 };
 
+const copyLivereloadFile = () => {
+  return copyFile(path.resolve('node_modules/.tmp/livereload.js'), path.resolve('dist/livereload.js'));  
+};
+
 const fileWatcher = (options = defaultOptions) => {
   return (isProcess(watchParams)) 
-    ? Promise.all([ liveReload(), watcher(options) ]) 
+    ? Promise.all([ liveReload(), watcher(options), copyLivereloadFile() ]) 
     : Promise.resolve();
 };
 

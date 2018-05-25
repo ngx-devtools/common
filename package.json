@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "node-sass": "4.9.0",
     "rimraf": "2.6.2",
     "strip-comments": "1.0.2",
-    "typescript": "2.7.2"
+    "typescript": "2.7.2",
+    "uglify-es": "3.3.9"
   }
 }
