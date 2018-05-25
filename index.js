@@ -8,15 +8,11 @@ const { rimraf, deleteFolderAsync } = require('./utils/rimraf');
 const { startAsync, doneAsync } = require('./utils/info');
 
 const { getFiles, deleteFileAsync, getSource, readFileAsync, writeFileAsync, readdirAsync, copyFile } = require('./utils/file');
-const { 
-  inlineResources, 
-  inlineResourcesFromString, 
-  copyFileAsync, 
-  copyFilesAsync 
-} = require('./utils/inline-resources');
+const { inlineResources, inlineResourcesFromString, copyFileAsync, copyFilesAsync } = require('./utils/inline-resources');
 
 const { isProcess } = require('./utils/check-args');
 const { concat, concatAsync } = require('./utils/concat');
+const { injectHtml } = require('./utils/inject-html');
 
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
@@ -24,7 +20,6 @@ const watcher = require('./watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
 const mkdirp = require('./utils/mkdirp');
 const memoize = require('./utils/memoize');
-const injectLiveReload = require('./utils/inject-livereload');
 const minify = require('./utils/minify');
 
 const uglifyJS = require('uglify-es');
@@ -33,6 +28,7 @@ exports.deleteFolderAsync = (folderName, hasInfo = true) => {
   return (hasInfo) ? deleteFolderAsync(folderName) : rimraf;
 };
 
+exports.injectHtml = injectHtml;
 exports.minify = minify;
 exports.uglifyJS = uglifyJS;
 exports.mkdirp = mkdirp;
@@ -58,4 +54,3 @@ exports.readFileAsync = readFileAsync;
 exports.readdirAsync = readdirAsync;
 exports.memoize = memoize;
 exports.isProcess = isProcess;
-exports.injectLiveReload = injectLiveReload;
