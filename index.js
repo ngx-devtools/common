@@ -16,19 +16,25 @@ const {
 } = require('./utils/inline-resources');
 
 const { isProcess } = require('./utils/check-args');
+const { concat, concatAsync } = require('./utils/concat');
 
 const devtools = require('./utils/devtools');
 const streamToPromise = require('./utils/stream-to-promise');
 const watcher = require('./watcher');
 const walkSync = require('./utils/walk-dir').walkSync;
-const { concat, concatAsync } = require('./utils/concat');
 const mkdirp = require('./utils/mkdirp');
 const memoize = require('./utils/memoize');
+const injectLiveReload = require('./utils/inject-livereload');
+const minify = require('./utils/minify');
+
+const uglifyJS = require('uglify-es');
 
 exports.deleteFolderAsync = (folderName, hasInfo = true) => {
   return (hasInfo) ? deleteFolderAsync(folderName) : rimraf;
 };
 
+exports.minify = minify;
+exports.uglifyJS = uglifyJS;
 exports.mkdirp = mkdirp;
 exports.getFiles = getFiles;
 exports.watcher = watcher;
@@ -52,3 +58,4 @@ exports.readFileAsync = readFileAsync;
 exports.readdirAsync = readdirAsync;
 exports.memoize = memoize;
 exports.isProcess = isProcess;
+exports.injectLiveReload = injectLiveReload;
