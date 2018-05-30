@@ -35,6 +35,9 @@ const getFiles = src => {
 exports.deleteFileAsync = deleteFileAsync;
 exports.getFiles = getFiles;
 exports.getSource = getSource;
+exports.lstatAsync = promisify(fs.lstat);
+exports.unlinkAsync = promisify(fs.unlink);
+exports.rmdirAsync = promisify(fs.rmdir);
 exports.readFileAsync = promisify(fs.readFile);
 exports.writeFileAsync = promisify(fs.writeFile);
 exports.readdirAsync = promisify(fs.readdir);
