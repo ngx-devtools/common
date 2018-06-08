@@ -2,9 +2,13 @@
 const uglify = require('uglify-es');
 const { readFileAsync } = require('./file');
 
-const minify = (file) => {
-  return readFileAsync(file, 'utf8')
-    .then(content => Promise.resolve(uglify.minify(content)))
+const minify = (file, options = {}) => {
+  return readFileAsync(file, 'utf8').then(content => minifyContent(content, options));
 };
 
-module.exports = minify;
+const minifyContent = (content, options) => {
+  return Promise.resolve(uglify.minify(content, options));
+};
+
+exports.minifyContent = minifyContent;
+exports.minify = minify;

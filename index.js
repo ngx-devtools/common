@@ -34,12 +34,13 @@ const streamToPromise = require('./utils/stream-to-promise');
 const watcher = require('./watcher');
 const mkdirp = require('./utils/mkdirp');
 const memoize = require('./utils/memoize');
-const minify = require('./utils/minify');
+const { minify, minifyContent } = require('./utils/minify');
 
 const uglifyJS = require('uglify-es');
 
 require('./utils/str-util');
 
+exports.minifyContent = minifyContent;
 exports.clean = clean;
 exports.injectHtml = injectHtml;
 exports.minify = minify;
