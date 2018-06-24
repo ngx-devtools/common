@@ -3,9 +3,12 @@ const fs = require('fs');
 const { clean } = require('./clean');
 const { symlinkAsync, unlinkAsync } = require('./file');
 
+const isWin = (process.platform === 'win32');
+
 const LINK_TYPE = Object.freeze({
   FILE: 'file',
-  DIR: 'dir'
+  DIR: 'dir',
+  JUNCTION: 'junction'
 });
 
 const symlink = (src, dest, type = LINK_TYPE.DIR) => {
@@ -14,7 +17,7 @@ const symlink = (src, dest, type = LINK_TYPE.DIR) => {
         ? unlinkAsync(dest) 
         : clean(dest)
     : Promise.resolve()
-  ).then(() => symlinkAsync(src, dest, type))
+  ).then(() => symlinkAsync(src, dest, isWin ? LINK_TYPE.JUNCTION: type))
 };
 
 exports.LINK_TYPE = LINK_TYPE;
