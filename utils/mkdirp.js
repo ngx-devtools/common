@@ -3,7 +3,7 @@ const path = require('path');
 const memoize = require('./memoize');
 
 const mkdirp = (directory) => {
-  const dirPath = directory.replace(/\/$/, '').split(path.sep);
+  const dirPath = path.resolve(directory).replace(/\/$/, '').split(path.sep);
   for (let i = 1; i <= dirPath.length; i++) {
     const segment = dirPath.slice(0, i).join(path.sep);
     if (!fs.existsSync(segment) && segment.length > 0) {
