@@ -6,7 +6,7 @@ const unlinkAsync = promisify(fs.unlink);
 
 const { walkSync } = require('./walk-dir');
 
-const getDir = (src) => {
+const getDir = src => {
   return (Array.isArray(src) ? src : [ src ])
     .map(file => {
       return { 
@@ -17,12 +17,14 @@ const getDir = (src) => {
     })
 };
 
-const getSource = (file) => 
+const getSource = file => 
   file.replace(path.sep, '')
     .replace(path.resolve() + path.sep, '')
     .split(path.sep)[0];
 
-const deleteFileAsync = (file) => (fs.existsSync(file)) ? unlinkAsync(file) : Promise.resolve();
+const deleteFileAsync = file => 
+  (fs.existsSync(file)) 
+    ? unlinkAsync(file) : Promise.resolve();
 
 const getFiles = src => {
   return getDir(src).map(directory => walkSync({ 
@@ -30,7 +32,7 @@ const getFiles = src => {
     isRecursive: directory.isRecursive, 
     includes: directory.includes 
   }));
-}
+};
 
 exports.deleteFileAsync = deleteFileAsync;
 exports.getFiles = getFiles;
@@ -43,3 +45,4 @@ exports.writeFileAsync = promisify(fs.writeFile);
 exports.readdirAsync = promisify(fs.readdir);
 exports.copyFile = promisify(fs.copyFile);
 exports.appendFile = promisify(fs.appendFile);
+exports.symlinkAsync = promisify(fs.symlink);

@@ -1,4 +1,4 @@
-const { resolve, join } = require('path');
+const { resolve } = require('path');
 
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
@@ -6,12 +6,12 @@ if (!(process.env.APP_ROOT_PATH)) {
 
 const { 
   getFiles, 
-  deleteFileAsync, 
   getSource, 
   readFileAsync, 
   writeFileAsync, 
   readdirAsync, 
-  copyFile 
+  unlinkAsync,
+  copyFile
 } = require('./utils/file');
 
 const { 
@@ -27,6 +27,8 @@ const { clean } = require('./utils/clean');
 const { walkSync } = require('./utils/walk-dir');
 const { concat, concatAsync } = require('./utils/concat');
 const { startAsync, doneAsync } = require('./utils/info');
+const { minify, minifyContent } = require('./utils/minify');
+const { symlink, LINK_TYPE } = require('./utils/symlink');
 
 const copy = require('./utils/copy');
 const devtools = require('./utils/devtools');
@@ -34,12 +36,14 @@ const streamToPromise = require('./utils/stream-to-promise');
 const watcher = require('./watcher');
 const mkdirp = require('./utils/mkdirp');
 const memoize = require('./utils/memoize');
-const { minify, minifyContent } = require('./utils/minify');
 
 const uglifyJS = require('uglify-es');
 
 require('./utils/str-util');
 
+exports.symlinkAsync = symlink;
+exports.unlinkAsync = unlinkAsync;
+exports.LINK_TYPE = LINK_TYPE;
 exports.minifyContent = minifyContent;
 exports.clean = clean;
 exports.injectHtml = injectHtml;

@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/ngx-devtools/common#readme",
   "dependencies": {
-    "chokidar": "2.0.3",
+    "chokidar": "2.0.4",
     "fast-memoize": "2.4.0",
     "gulp-livereload": "3.8.1",
     "mime": "2.3.1",
