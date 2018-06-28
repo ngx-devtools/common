@@ -11,6 +11,7 @@ const getFiles = require('./get-files');
 const { liveReload } = require('./live-reload');
 const { isProcess } = require('../utils/check-args');
 const { copyFile } = require('../utils/file');
+const { injectHtml  } = require('../utils/inject-html');
 
 const WATCH_EVENT = require('./events');
 
@@ -43,7 +44,7 @@ const copyLivereloadFile = () => {
 const fileWatcher = (options = defaultOptions) => {
   return (isProcess(watchParams)) 
     ? Promise.all([ liveReload(), watcher(options), copyLivereloadFile() ]) 
-    : Promise.resolve();
+    : injectHtml(path.resolve(path.join('dist', 'index.html')));
 };
 
 module.exports = fileWatcher;
