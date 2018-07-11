@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "1.9.2",
+  "version": "1.10.0-beta.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,12 +18,12 @@
   "homepage": "https://github.com/ngx-devtools/common#readme",
   "dependencies": {
     "chokidar": "2.0.4",
-    "fast-memoize": "2.4.0",
+    "fast-memoize": "2.5.1",
     "gulp-livereload": "3.8.1",
     "mime": "2.3.1",
-    "node-sass": "4.9.0",
+    "node-sass": "4.9.2",
     "strip-comments": "1.0.2",
     "typescript": "2.7.2",
-    "uglify-es": "3.3.9"
+    "terser": "3.7.8"
   }
 }

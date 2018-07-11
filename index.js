@@ -53,7 +53,7 @@ const { clean } = require('./utils/clean');
 const { walkSync } = require('./utils/walk-dir');
 const { symlink, LINK_TYPE } = require('./utils/symlink');
 
-const uglifyJS = require('uglify-es');
+const terser = require('terser');
 
 require('./utils/str-util');
 
@@ -104,7 +104,7 @@ exports.minifyContent = minifyContent;
 exports.mkdirp = mkdirp;
 exports.symlinkAsync = symlink;
 exports.LINK_TYPE = LINK_TYPE;
-exports.uglifyJS = uglifyJS;
+exports.uglifyJS = terser;
 exports.watcher = watcher;
 exports.copyFile = copyFile;
 exports.streamToPromise = streamToPromise;
