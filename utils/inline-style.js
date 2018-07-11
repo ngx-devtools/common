@@ -116,8 +116,18 @@ const inlineStyleDevMode = (content, urlResolver) => {
   });
 };
 
+const inlineStyleCustomElements = (content, urlResolver) => {
+  return content.replace(/styleUrl\s*:\s*'([^']+?\.*css)'/g,  (m, styleUrl) => {
+    return m.replace('styleUrl', 'style').replace(styleUrl, getContent(styleUrl, urlResolver))
+  });
+};
+
 exports.inlineStyle = (envMode = false) =>  (envMode) ? inlineStyleProdMode : inlineStyleDevMode;
 
-exports.inlineStyleDevMode = inlineStyleDevMode;
-exports.inlineStyleProdMode = inlineStyleProdMode;
+exports.inlineImage = inlineImage;
+exports.getContent = getContent;
+exports.cssPrettify = cssPrettify;
 exports.buildSass = buildSass;
+exports.inlineStyleProdMode = inlineStyleProdMode;
+exports.inlineStyleDevMode = inlineStyleDevMode;
+exports.inlineStyleCustomElements = inlineStyleCustomElements;

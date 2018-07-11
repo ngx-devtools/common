@@ -1,5 +1,5 @@
 
-const uglify = require('uglify-es');
+const terser = require('terser');
 const { readFileAsync } = require('./file');
 
 const minify = (file, options = {}) => {
@@ -7,7 +7,7 @@ const minify = (file, options = {}) => {
 };
 
 const minifyContent = (content, options) => {
-  return Promise.resolve(uglify.minify(content, options));
+  return Promise.resolve(terser.minify(content, options));
 };
 
 exports.minifyContent = minifyContent;
