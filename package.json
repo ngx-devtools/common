@@ -25,5 +25,10 @@
     "strip-comments": "1.0.2",
     "typescript": "2.7.2",
     "terser": "3.7.8"
+  },
+  "devDependencies": {
+    "@types/node": "10.5.2",
+    "ts-node": "7.0.0",
+    "tslib": "1.9.3"
   }
 }
