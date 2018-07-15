@@ -2,8 +2,9 @@
   "name": "@ngx-devtools/common",
   "version": "1.10.0-beta.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/common.js",
   "scripts": {
+    "ts-node": "./node_modules/.bin/ts-node build.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,11 +25,15 @@
     "node-sass": "4.9.2",
     "strip-comments": "1.0.2",
     "typescript": "2.7.2",
-    "terser": "3.7.8"
+    "terser": "3.7.8",
+    "tslib": "1.9.3"
   },
   "devDependencies": {
     "@types/node": "10.5.2",
-    "ts-node": "7.0.0",
-    "tslib": "1.9.3"
-  }
+    "rollup": "0.62.0",
+    "rollup-plugin-node-resolve": "3.3.0",
+    "rollup-plugin-typescript2": "0.15.1",
+    "ts-node": "7.0.0"
+  },
+  "typings": "dist/common.d.ts"
 }
