@@ -1,5 +1,3 @@
-import chokidar from 'chokidar';
-
 import { resolve, join, dirname } from 'path';
 
 import { readFileAsync, writeFileAsync, mkdirp } from './file';
@@ -8,6 +6,10 @@ import { rollup, OutputChunk } from 'rollup';
 const depsResolve = require('rollup-plugin-node-resolve');
 const typescript = require('rollup-plugin-typescript2');
 
+if (!(process.env.APP_ROOT_PATH)) {
+  process.env.APP_ROOT_PATH = resolve();
+}
+
 interface RollupOptions {
   input: string;
   file: string;
@@ -15,10 +17,6 @@ interface RollupOptions {
   format: string;
   external?: string[];
   plugins?: string[];
-}
-
-if (!(process.env.APP_ROOT_PATH)) {
-  process.env.APP_ROOT_PATH = resolve();
 }
 
 const defaultExternals: string[] = [ 
@@ -35,6 +33,13 @@ const defaultExternals: string[] = [
   'rollup-plugin-typescript2'
 ];
 
+function rollupExternals(options: RollupOptions): string[] {
+  return (options.external && Array.isArray(options.external))
+    ? [].concat(options.external.filter(value => defaultExternals.find(external => external !== value)))
+        .concat(defaultExternals)
+    : defaultExternals;
+}
+
 function createRollupConfig(options: RollupOptions) {
   return {
     inputOptions: {
@@ -49,7 +54,7 @@ function createRollupConfig(options: RollupOptions) {
         }),
         depsResolve()
       ],
-      external: options.external || defaultExternals,
+      external: rollupExternals(options),
       onwarn (warning) {
         if (warning.code === 'THIS_IS_UNDEFINED') { return; }
         console.log("Rollup warning: ", warning.message);

@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/common.js",
   "scripts": {
-    "ts-node": "./node_modules/.bin/ts-node build.ts",
+    "build": "./node_modules/.bin/ts-node build.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
