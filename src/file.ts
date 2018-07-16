@@ -16,11 +16,11 @@ const copyFileAsync = promisify(copyFile);
 const symlinkAsync = promisify(symlink);
 const rmdirAsync = promisify(rmdir);
 
-const LINK_TYPE = Object.freeze({
-  FILE: 'file',
-  DIR: 'dir',
-  JUNCTION: 'junction'
-});
+enum LINK_TYPE {
+  FILE = 'file',
+  DIR = 'dir',
+  JUNCTION = 'junction'
+}
 
 interface GlobFileOptions {
   dir: string;
@@ -124,7 +124,7 @@ async function concat(src: string | string[], dest: string): Promise<void> {
   });
 }
 
-function mkdirp(directory: string){
+function mkdirp(directory: string) {
   const dirPath = resolve(directory).replace(/\/$/, '').split(sep);
   for (let i = 1; i <= dirPath.length; i++) {
     const segment = dirPath.slice(0, i).join(sep);

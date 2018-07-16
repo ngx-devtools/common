@@ -6,3 +6,4 @@ export * from './check-args';
 export * from './minify';
 export * from './inject-html';
 export * from './watcher';
+export * from './build-package';
