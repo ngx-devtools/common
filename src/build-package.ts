@@ -1,22 +1,33 @@
 import { resolve, join, dirname } from 'path';
 
 import { readFileAsync, writeFileAsync, mkdirp } from './file';
-import { rollup, OutputChunk } from 'rollup';
+import { rollup } from 'rollup';
 
 const depsResolve = require('rollup-plugin-node-resolve');
 const typescript = require('rollup-plugin-typescript2');
+const multiEntry = require('rollup-plugin-multi-entry');
 
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
 }
 
-interface RollupOptions {
-  input: string;
+interface RollupOutputOptions {
   file: string;
-  tsconfig?: string;
   format: string;
+  name?: string;
+  sourcemap?: boolean;
+  globals?: any;
+  exports?: string;
+  dir?: string;
+}
+
+interface RollupOptions {
+  input: string | string[];
+  tsconfig?: string;
   external?: string[];
+  overrideExternal?: boolean;
   plugins?: string[];
+  output: RollupOutputOptions;
 }
 
 const defaultExternals: string[] = [ 
@@ -30,10 +41,11 @@ const defaultExternals: string[] = [
   'chokidar', 
   'rollup', 
   'rollup-plugin-node-resolve',
-  'rollup-plugin-typescript2'
+  'rollup-plugin-typescript2',
+  'rollup-plugin-multi-entry'
 ];
 
-function rollupExternals(options: RollupOptions): string[] {
+function rollupExternals(options: RollupOptions) {
   return (options.external && Array.isArray(options.external))
     ? [].concat(options.external.filter(value => defaultExternals.find(external => external !== value)))
         .concat(defaultExternals)
@@ -41,34 +53,39 @@ function rollupExternals(options: RollupOptions): string[] {
 }
 
 function createRollupConfig(options: RollupOptions) {
+  const tsOptions: any = {
+    check: false,
+    cacheRoot: join(process.env.APP_ROOT_PATH, 'node_modules/.tmp/.rts2_cache'), 
+    useTsconfigDeclarationDir: false
+  };
+
+  if (options.tsconfig) {
+    tsOptions.tsconfig = options.tsconfig
+  }
+
   return {
     inputOptions: {
       input: options.input,
       treeshake: true,
       plugins: options.plugins || [
-        typescript({
-          tsconfig: options.tsconfig || 'src/tsconfig.json',
-          check: false,
-          cacheRoot: join(process.env.APP_ROOT_PATH, 'node_modules/.tmp/.rts2_cache'), 
-          useTsconfigDeclarationDir: false
-        }),
+        multiEntry(),
+        typescript({ ...tsOptions }),
         depsResolve()
       ],
-      external: rollupExternals(options),
+      external: options.overrideExternal ? options.external: rollupExternals(options),
       onwarn (warning) {
         if (warning.code === 'THIS_IS_UNDEFINED') { return; }
         console.log("Rollup warning: ", warning.message);
       }
     },
     outputOptions: {
-      sourcemap: false,
-      file: options.file,
-      format: options.format
+      sourcemap: options.output.sourcemap || false,
+      ...options.output
     }
   }
 }
 
-async function rollupBuild({ inputOptions, outputOptions }): Promise<OutputChunk> {
+async function rollupBuild({ inputOptions, outputOptions }): Promise<any> {
   return rollup(inputOptions).then(bundle => bundle.write(outputOptions));
 }
 
@@ -92,4 +109,4 @@ async function buildCopyPackageFile(name: string) {
     });
 }
 
-export { buildCopyPackageFile, rollupBuild, RollupOptions, createRollupConfig } 
+export { buildCopyPackageFile, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig } 

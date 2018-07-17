@@ -3,9 +3,15 @@ import { buildCopyPackageFile, rollupBuild, createRollupConfig } from './src/bui
 
 const PKG_NAME = 'common';
 
+const rollupConfig = createRollupConfig({
+  input: `src/${PKG_NAME}.ts`,
+  tsconfig: 'src/tsconfig.json',
+  output: {
+    file: `dist/${PKG_NAME}.js`,
+    format: 'cjs'
+  }
+})
+
 Promise.all([ clean('dist') ]).then(() => {
-  return Promise.all([ 
-    buildCopyPackageFile(PKG_NAME),  
-    rollupBuild(createRollupConfig({ input: `src/${PKG_NAME}.ts`, file: `dist/${PKG_NAME}.js`, format: 'cjs' }))
-  ])
+  return Promise.all([ buildCopyPackageFile(PKG_NAME), rollupBuild(rollupConfig) ])
 });
