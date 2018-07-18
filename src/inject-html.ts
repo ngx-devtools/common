@@ -1,4 +1,5 @@
 import { resolve, join } from 'path';
+import { existsSync } from 'fs';
 
 import { readFileAsync, writeFileAsync } from './file';
 import { isProcess } from './check-args';
@@ -38,7 +39,8 @@ async function injectSystemjsScript(content): Promise<string> {
 }
 
 async function injectTitle(content): Promise<string> {
-  const DEVTOOLS_CONFIG = require('./devtools')
+  const devtoolsPath = join(process.env.APP_ROOT_PATH, '.devtools.json');
+  const DEVTOOLS_CONFIG = existsSync(devtoolsPath) ? require(devtoolsPath): {};
   const title = DEVTOOLS_CONFIG['title'];
   return Promise.resolve(content.replace('<!-- title -->', title ? title : 'NGX AppSeed Application'));
 }

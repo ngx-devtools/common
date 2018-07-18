@@ -1,4 +1,4 @@
-import { resolve, join, dirname } from 'path';
+import { resolve, join, dirname, basename } from 'path';
 
 import { readFileAsync, writeFileAsync, mkdirp } from './file';
 import { rollup } from 'rollup';
@@ -89,6 +89,18 @@ async function rollupBuild({ inputOptions, outputOptions }): Promise<any> {
   return rollup(inputOptions).then(bundle => bundle.write(outputOptions));
 }
 
+async function rollBuildDev({ inputOptions, outputOptions }) {
+  return rollup(inputOptions)
+  .then(bundle => bundle.generate(outputOptions))
+  .then(({ code, map }) => {
+    mkdirp(dirname(outputOptions.file));
+    return Promise.all([ 
+      writeFileAsync(outputOptions.file, code + `\n//# sourceMappingURL=${basename(outputOptions.file)}.map`),
+      writeFileAsync(outputOptions.file + '.map', map.toString())
+    ])
+  });
+}
+
 async function buildCopyPackageFile(name: string) {
   const pkgFilePath = join(process.env.APP_ROOT_PATH, 'package.json');
   return readFileAsync(pkgFilePath, 'utf8')
@@ -109,4 +121,4 @@ async function buildCopyPackageFile(name: string) {
     });
 }
 
-export { buildCopyPackageFile, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig } 
+export { buildCopyPackageFile, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig, rollBuildDev } 

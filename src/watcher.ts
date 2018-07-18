@@ -43,19 +43,18 @@ interface WatcherOptions {
 }
 
 async function liveReload() {
-  async function injectReload(){
-    livereload.listen(); return Promise.resolve();
-  }
-  return injectHtml(HTML_PATH).then(() => {
-    return isProcess(liveReloadParams) 
-      ? injectReload() 
-      : Promise.resolve();
+  return injectHtml(HTML_PATH)
+    .then(async () => {
+      return isProcess(liveReloadParams) 
+        ? await livereload.listen() 
+        : Promise.resolve();
   })
 }
 
 async function reloadPage(file: string): Promise<void> {
-  if (isProcess(liveReloadParams)) livereload.changed(file);
-  return Promise.resolve();
+  return (isProcess(liveReloadParams)) 
+    ? await livereload.changed(file)
+    : Promise.resolve();
 }
 
 async function copyLivereloadFile() {
@@ -106,17 +105,17 @@ function fileWatcher(options: WatcherOptions) {
   }
 
   const watch = chokidar.watch(options.file || 'src', { ignored: options.ignore })
-    .on(WATCH_EVENT.READY, function() {
+    .on(WATCH_EVENT.READY, async function() {
       isReady = true;
-      onFileChanged = _onFileChanged(options, getFiles(watch.getWatched()));
+      onFileChanged = await _onFileChanged(options, getFiles(watch.getWatched()));
       console.log('> Initial scan complete. Ready for changes.'); 
     })
-    .on(WATCH_EVENT.ALL, function(event: any, path: string) {
+    .on(WATCH_EVENT.ALL, async function(event: any, path: string) {
       if (isReady) {
         switch(event) {
           case WATCH_EVENT.ADD: 
           case WATCH_EVENT.CHANGE:
-            onFileChanged(event, path); break;
+            await onFileChanged(event, path); break;
           case WATCH_EVENT.DELETE:
             console.log(`> ${event}: ${path}.`); break;
         }
