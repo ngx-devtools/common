@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "1.10.0-beta.0",
+  "version": "2.0.0-beta.0",
   "description": "",
   "main": "dist/common.js",
   "scripts": {
@@ -20,17 +20,15 @@
   "dependencies": {
     "@types/node": "10.5.2",
     "chokidar": "2.0.4",
-    "fast-memoize": "2.5.1",
     "gulp-livereload": "3.8.1",
-    "mime": "2.3.1",
     "node-sass": "4.9.2",
-    "rollup": "0.62.0",
+    "rollup": "0.63.2",
     "rollup-plugin-multi-entry": "2.0.2",
     "rollup-plugin-node-resolve": "3.3.0",
-    "rollup-plugin-typescript2": "0.15.1",
+    "rollup-plugin-typescript2": "0.16.1",
     "strip-comments": "1.0.2",
     "typescript": "2.7.2",
-    "terser": "3.7.8",
+    "terser": "3.8.0",
     "tslib": "1.9.3"
   },
   "devDependencies": {

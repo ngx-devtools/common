@@ -26,7 +26,7 @@ interface RollupOptions {
   tsconfig?: string;
   external?: string[];
   overrideExternal?: boolean;
-  plugins?: string[];
+  plugins?: any[];
   output: RollupOutputOptions;
 }
 
@@ -63,15 +63,23 @@ function createRollupConfig(options: RollupOptions) {
     tsOptions.tsconfig = options.tsconfig
   }
 
+  const plugins = [ 
+    multiEntry(), 
+    typescript({ ...tsOptions }), 
+    depsResolve() 
+  ];
+
+  if (options.plugins) {
+    options.plugins
+      .filter(plugin => [ 'rpt2', 'node-resolve' ].find(value => plugin.name !== value))
+      .forEach(value => plugins.push(value));
+  }  
+
   return {
     inputOptions: {
       input: options.input,
       treeshake: true,
-      plugins: options.plugins || [
-        multiEntry(),
-        typescript({ ...tsOptions }),
-        depsResolve()
-      ],
+      plugins: plugins,
       external: options.overrideExternal ? options.external: rollupExternals(options),
       onwarn (warning) {
         if (warning.code === 'THIS_IS_UNDEFINED') { return; }
@@ -89,7 +97,7 @@ async function rollupBuild({ inputOptions, outputOptions }): Promise<any> {
   return rollup(inputOptions).then(bundle => bundle.write(outputOptions));
 }
 
-async function rollBuildDev({ inputOptions, outputOptions }) {
+async function rollupGenerate({ inputOptions, outputOptions }): Promise<any> {
   return rollup(inputOptions)
   .then(bundle => bundle.generate(outputOptions))
   .then(({ code, map }) => {
@@ -121,4 +129,4 @@ async function buildCopyPackageFile(name: string) {
     });
 }
 
-export { buildCopyPackageFile, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig, rollBuildDev } 
+export { buildCopyPackageFile, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig, rollupGenerate } 
