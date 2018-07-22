@@ -32,7 +32,7 @@ async function globFiles(src: string | string[]): Promise<string[]> {
   const files = Array.isArray(src) ? src : [ src ];
   return Promise.all(files.map(file => {
     const options: GlobFileOptions = {
-      dir: dirname(resolve(file).replace('/**', '')),
+      dir: dirname(resolve(file).replace(sep + '**', '')),
       isRecursive: file.includes('**'),
       pattern: basename(file)
     }
