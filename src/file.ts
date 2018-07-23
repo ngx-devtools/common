@@ -1,4 +1,4 @@
-import { readdir, stat, statSync, readlinkSync, readFile, writeFile, lstat, unlink, copyFile, rmdir, symlink, existsSync, mkdirSync } from 'fs';
+import { readdir, stat, statSync, readlinkSync, readFile, writeFile, lstat, unlink, copyFile, rmdir, rename, symlink, existsSync, mkdirSync } from 'fs';
 import { promisify } from 'util';
 import { resolve, join, sep, dirname, basename } from 'path';
 import { startAsync, doneAsync } from './info';
@@ -15,6 +15,7 @@ const unlinkAsync = promisify(unlink);
 const copyFileAsync = promisify(copyFile);
 const symlinkAsync = promisify(symlink);
 const rmdirAsync = promisify(rmdir);
+const renameAsync = promisify(rename);
 
 enum LINK_TYPE {
   FILE = 'file',
@@ -143,6 +144,7 @@ export {
   unlinkAsync,
   copyFileAsync,
   symlinkAsync,
+  renameAsync,
   walkAsync,
   globFiles,
   LINK_TYPE,

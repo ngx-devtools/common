@@ -1,6 +1,7 @@
 import { resolve, join, dirname, basename } from 'path';
 
-import { readFileAsync, writeFileAsync, mkdirp } from './file';
+import { readFileAsync, writeFileAsync, mkdirp, copyFileAsync } from './file';
+import { minifyContent } from './minify';
 import { rollup } from 'rollup';
 
 const depsResolve = require('rollup-plugin-node-resolve');
@@ -30,6 +31,13 @@ interface RollupOptions {
   output: RollupOutputOptions;
 }
 
+interface PkgOptions {
+  module?: string;
+  esm2015?: string;
+  typings?: string;
+  main?: string;
+}
+
 const defaultExternals: string[] = [ 
   'fs', 
   'util', 
@@ -50,6 +58,20 @@ function rollupExternals(options: RollupOptions) {
     ? [].concat(options.external.filter(value => defaultExternals.find(external => external !== value)))
         .concat(defaultExternals)
     : defaultExternals;
+}
+
+function rollupPluginUglify(userOptions?: any){
+  const options = Object.assign({ sourceMap: true }, userOptions);
+  return {
+    name: "uglify",
+    transformBundle: async (code) => {
+      const result = await minifyContent(code, options);
+      if (result.error) {
+        throw result.error;
+      }
+      return result;
+    }
+  };
 }
 
 function createRollupConfig(options: RollupOptions) {
@@ -109,7 +131,7 @@ async function rollupGenerate({ inputOptions, outputOptions }): Promise<any> {
   });
 }
 
-async function buildCopyPackageFile(name: string) {
+async function buildCopyPackageFile(name: string, pkgOptions?: PkgOptions) {
   const pkgFilePath = join(process.env.APP_ROOT_PATH, 'package.json');
   return readFileAsync(pkgFilePath, 'utf8')
     .then(contents => {
@@ -123,10 +145,16 @@ async function buildCopyPackageFile(name: string) {
         ...{ module: `./esm2015/${name}.js` },
         ...{ esm2015: `./esm2015/${name}.js` },
         ...{ typings: `${name}.d.ts` },
-        ...{ main: `${name}.js` }
+        ...{ main: `${name}.js` },
+        ...pkgOptions
       };
       return writeFileAsync(destPath, JSON.stringify(pkg, null, 2));
     });
 }
 
-export { buildCopyPackageFile, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig, rollupGenerate } 
+async function copyReadMe(file?: string){
+  const pathFile = (file) ? resolve(file): join(process.env.APP_ROOT_PATH, 'README.md');
+  return copyFileAsync(pathFile, join(process.env.APP_ROOT_PATH, 'dist', basename(pathFile)));
+} 
+
+export { buildCopyPackageFile, copyReadMe, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig, rollupGenerate, PkgOptions, rollupPluginUglify } 
