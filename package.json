@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "",
   "main": "dist/common.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "rollup-plugin-node-resolve": "3.3.0",
     "rollup-plugin-typescript2": "0.16.1",
     "strip-comments": "1.0.2",
-    "typescript": "2.9.2",
+    "typescript": "2.7.2",
     "terser": "3.8.1",
     "tslib": "1.9.3"
   },
