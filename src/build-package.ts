@@ -3,10 +3,7 @@ import { resolve, join, dirname, basename } from 'path';
 import { readFileAsync, writeFileAsync, mkdirp, copyFileAsync } from './file';
 import { minifyContent } from './minify';
 import { rollup } from 'rollup';
-
-const depsResolve = require('rollup-plugin-node-resolve');
-const typescript = require('rollup-plugin-typescript2');
-const multiEntry = require('rollup-plugin-multi-entry');
+import { depsResolve, typescript, multiEntry } from './rollup-plugins';
 
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
@@ -50,7 +47,8 @@ const defaultExternals: string[] = [
   'rollup', 
   'rollup-plugin-node-resolve',
   'rollup-plugin-typescript2',
-  'rollup-plugin-multi-entry'
+  'rollup-plugin-multi-entry',
+  'rollup-plugin-commonjs'
 ];
 
 function rollupExternals(options: RollupOptions) {

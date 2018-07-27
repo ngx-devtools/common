@@ -4,8 +4,7 @@
   "description": "",
   "main": "dist/common.js",
   "scripts": {
-    "build": "./node_modules/.bin/ts-node build.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "ts-node build"
   },
   "repository": {
     "type": "git",
@@ -23,6 +22,7 @@
     "gulp-livereload": "3.8.1",
     "node-sass": "4.9.2",
     "rollup": "0.63.4",
+    "rollup-plugin-commonjs": "9.1.3",
     "rollup-plugin-multi-entry": "2.0.2",
     "rollup-plugin-node-resolve": "3.3.0",
     "rollup-plugin-typescript2": "0.16.1",
