@@ -48,7 +48,8 @@ const defaultExternals: string[] = [
   'rollup-plugin-node-resolve',
   'rollup-plugin-typescript2',
   'rollup-plugin-multi-entry',
-  'rollup-plugin-commonjs'
+  'rollup-plugin-commonjs',
+  'stream'
 ];
 
 function rollupExternals(options: RollupOptions) {
