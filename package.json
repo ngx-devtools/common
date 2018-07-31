@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/common.js",
   "scripts": {
+    "postinstall": "npm run build",
     "build": "ts-node build"
   },
   "repository": {
@@ -32,7 +33,7 @@
     "trumpet": "1.7.2",
     "tslib": "1.9.3"
   },
-  "devDependencies": {    
+  "devDependencies": {
     "ts-node": "7.0.0"
   },
   "typings": "dist/common.d.ts"
