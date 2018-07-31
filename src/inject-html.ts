@@ -1,5 +1,5 @@
 import { resolve, join, isAbsolute, relative } from 'path';
-import { existsSync, write } from 'fs';
+import { existsSync } from 'fs';
 
 import { readFileAsync, writeFileAsync } from './file';
 import { isProcess } from './check-args';
@@ -34,7 +34,7 @@ function streamContent(content: string){
   return passThrough;
 }
 
-function urlResolver(p) {
+function urlResolver(p: string) {
   return (isAbsolute(p)) 
     ? resolve(process.env.APP_ROOT_PATH, relative('/', p))
     : resolve(process.env.APP_ROOT_PATH, p);
@@ -49,7 +49,7 @@ async function inlineHtml(content: string, tr: any) {
   });
 }
 
-async function injectLivereload(content): Promise<string> {
+async function injectLivereload(content: string){
   const defaults = {
     port: 35729,
     host: 'http://\' + (location.host || "localhost").split(":")[0] + \'',
@@ -63,21 +63,35 @@ async function injectLivereload(content): Promise<string> {
   return Promise.resolve(content.replace(LIVERELOAD, template(defaults)));
 }
 
-async function injectShims(content): Promise<string> {
+async function injectShims(content: string){
   const shimsPath = join(argv.vendorRootDir, 'shims.min.js');
   return existsSync(join(process.env.APP_ROOT_PATH, shimsPath))
     ? Promise.resolve(content.replace(SHIMS, `<script src="${shimsPath}"></script>`))
     : Promise.resolve(content);
 }
 
-async function injectSystemjsScript(content): Promise<string> {
+async function injectPolyfills(content: string) {
+  const polyfills = [
+    { searchValue: '<!-- native-shim -->', replaceValue: 'node_modules/.tmp/native-shim.min.js'   },
+    { searchValue: '<!-- custom-elements -->', replaceValue: 'node_modules/@webcomponents/custom-elements/custom-elements.min.js' },
+    { searchValue: '<!-- core-js-shim -->', replaceValue: 'node_modules/core-js/client/shim.min.js' },
+    { searchValue: '<!-- system-js -->', replaceValue: 'node_modules/systemjs/dist/system.js' },
+    { searchValue: '<!-- zone-js -->', replaceValue: 'node_modules/zone.js/dist/zone.min.js' }
+  ];
+  for (const polyfill of polyfills) {
+    content = content.replace(polyfill.searchValue, `<script src="${polyfill.replaceValue}"></script>`);
+  }
+  return Promise.resolve(content);
+}
+
+async function injectSystemjsScript(content: string){
   const systemjsPath = join(process.env.APP_ROOT_PATH, argv.vendorRootDir, `systemjs-script.min.js`);
   return existsSync(systemjsPath)
     ? readFileAsync(systemjsPath, 'utf8').then(fileContent => content.replace(SYSTEMJS, `<script>${fileContent}</script>`))
     : Promise.resolve(content);
 }
 
-async function injectTitle(content): Promise<string> {
+async function injectTitle(content: string){
   const title = DEVTOOLS_CONFIG['title'];
   return Promise.resolve(content.replace(TITLE, title ? title : 'NGX AppSeed Application'));
 }
@@ -114,15 +128,16 @@ async function inlineLinkStyle(content: string) {
   return inlineHtml(content, tr);
 }
 
-async function injectHtml(html): Promise<void> {
+async function injectHtml(html: string){
   return readFileAsync(html, 'utf8')
+    .then(content => injectPolyfills(content))
     .then(content => inlineScript(content))
     .then(content => isProcess(liveReloadParams) ? injectLivereload(content) : Promise.resolve(content))
     .then(content => injectShims(content))
     .then(content => injectSystemjsScript(content))
-    .then(content => injectTitle(content))
     .then(content => inlineLinkStyle(content))
-    .then(content => writeFileAsync(html, content))
-};
+    .then(content => injectTitle(content))
+    .then(content => writeFileAsync(html, content.replace(/([\n\r]*)+/gm,"")))
+}
 
 export { injectLivereload, injectShims, injectSystemjsScript, injectTitle, injectHtml, trumpet, inlineLinkStyle, inlineScript }
