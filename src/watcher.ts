@@ -2,7 +2,7 @@ import chokidar from 'chokidar';
 
 import { isFunction } from 'util';
 import { resolve, join } from 'path';
-import { statSync } from 'fs';
+import { statSync, existsSync } from 'fs';
 
 import { isProcess } from './check-args';
 import { injectHtml } from './inject-html';
@@ -36,7 +36,7 @@ interface OnServerFileChanged {
 }
 
 interface WatcherOptions {
-  file?: string;
+  file?: string | string[];
   ignore?: string[];
   onClientFileChanged?: OnClientFileChanged;
   onServerFileChanged?: OnServerFileChanged;
@@ -57,11 +57,21 @@ async function reloadPage(file: string): Promise<void> {
     : Promise.resolve();
 }
 
+async function livereloadFile() {
+  const LIVEREALOD_PATH_TMP = join(process.env.APP_ROOT_PATH, 'node_modules/.tmp/livereload.js');
+  return existsSync(LIVEREALOD_PATH_TMP)
+    ? LIVEREALOD_PATH_TMP
+    : join(process.env.APP_ROOT_PATH, 'node_modules/livereload-js/dist/livereload.js');
+}
+
 async function copyLivereloadFile() {
-  return  copyFileAsync(
-    join(process.env.APP_ROOT_PATH, 'node_modules/.tmp/livereload.js'),
-    join(process.env.APP_ROOT_PATH, 'dist/livereload.js')
-  ); 
+  const LIVERELOAD_PATH = await livereloadFile();
+  return existsSync(LIVERELOAD_PATH)
+    ? copyFileAsync(
+        LIVERELOAD_PATH,
+        join(process.env.APP_ROOT_PATH, 'dist/livereload.js')
+      )
+    : Promise.resolve();
 }
 
 function getFiles(directories) {
