@@ -14,6 +14,7 @@ if (!(process.env.APP_ROOT_PATH)) {
 }
 
 const liveReloadParams = [ '--livereload',  '--livereload=true',  '--livereload true'  ];
+const prodModeParams = [ '--prod',  '--prod=true',  '--prod true'  ];
 
 const devtoolsPath = join(process.env.APP_ROOT_PATH, '.devtools.json');
 const DEVTOOLS_CONFIG = existsSync(devtoolsPath) ? require(devtoolsPath): {};
@@ -46,6 +47,8 @@ async function inlineHtml(content: string, tr: any) {
     stream.on('data', chunk => chunks.push(chunk.toString()));
     stream.on('end', () => resolve(chunks.join('')))
     stream.on('error', reject);
+  }).then((content: string) => {
+    return Promise.resolve(content) 
   });
 }
 
@@ -128,16 +131,22 @@ async function inlineLinkStyle(content: string) {
   return inlineHtml(content, tr);
 }
 
+async function jsScripts(content: string){
+  return isProcess(prodModeParams)
+    ? injectPolyfills(content)
+        .then(content => inlineScript(content))
+        .then(content => content.replace(/([\n\r]*)+/gm,""))
+    : injectShims(content)
+}
+
 async function injectHtml(html: string){
   return readFileAsync(html, 'utf8')
-    .then(content => injectPolyfills(content))
-    .then(content => inlineScript(content))
     .then(content => isProcess(liveReloadParams) ? injectLivereload(content) : Promise.resolve(content))
-    .then(content => injectShims(content))
     .then(content => injectSystemjsScript(content))
     .then(content => inlineLinkStyle(content))
     .then(content => injectTitle(content))
-    .then(content => writeFileAsync(html, content.replace(/([\n\r]*)+/gm,"")))
+    .then(content => jsScripts(content))
+    .then(content => writeFileAsync(html, content))
 }
 
 export { injectLivereload, injectShims, injectSystemjsScript, injectTitle, injectHtml, trumpet, inlineLinkStyle, inlineScript }
