@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.6",
   "description": "",
   "main": "dist/common.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/ngx-devtools/common#readme",
   "dependencies": {
-    "@types/node": "10.5.4",
+    "@types/node": "10.5.5",
     "chokidar": "2.0.4",
     "gulp-livereload": "3.8.1",
     "node-sass": "4.9.2",
