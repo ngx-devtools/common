@@ -81,6 +81,7 @@ async function injectPolyfills(content: string) {
     { searchValue: '<!-- system-js -->', replaceValue: 'node_modules/systemjs/dist/system.js' },
     { searchValue: '<!-- zone-js -->', replaceValue: 'node_modules/zone.js/dist/zone.min.js' }
   ];
+  content = content.replace(SHIMS, polyfills.map(polyfill => polyfill.searchValue).join('\n')) ;
   for (const polyfill of polyfills) {
     content = content.replace(polyfill.searchValue, `<script src="${polyfill.replaceValue}"></script>`);
   }
