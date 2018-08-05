@@ -3,10 +3,9 @@ import { buildCopyPackageFile, rollupBuild, createRollupConfig } from './src/bui
 
 (async function(){
   const PKG_NAME = 'common';
-  const files = await globFiles('src/**/*.ts');
 
   const rollupConfig = createRollupConfig({
-    input: files,
+    input: `src/${PKG_NAME}.ts`,
     tsconfig: 'src/tsconfig.json',
     output: {
       file: `dist/${PKG_NAME}.js`,

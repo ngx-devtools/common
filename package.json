@@ -1,8 +1,9 @@
 {
   "name": "@ngx-devtools/common",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.8",
   "description": "",
   "main": "dist/common.js",
+  "module": "dist/common.js",
   "scripts": {
     "postinstall": "npm run build",
     "build": "ts-node build"
