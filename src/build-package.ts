@@ -1,6 +1,6 @@
-import { resolve, join, dirname, basename } from 'path';
+import { resolve, join, dirname, basename, extname, sep } from 'path';
 
-import { readFileAsync, writeFileAsync, mkdirp, copyFileAsync } from './file';
+import { readFileAsync, writeFileAsync, mkdirp, copyFileAsync, globFiles, clean } from './file';
 import { minifyContent } from './minify';
 import { rollup } from 'rollup';
 import { depsResolve, typescript, multiEntry } from './rollup-plugins';
@@ -10,8 +10,8 @@ if (!(process.env.APP_ROOT_PATH)) {
 }
 
 interface RollupOutputOptions {
-  file: string;
-  format: string;
+  file?: string;
+  format?: string;
   name?: string;
   sourcemap?: boolean;
   globals?: any;
@@ -26,6 +26,23 @@ interface RollupOptions {
   overrideExternal?: boolean;
   plugins?: any[];
   output: RollupOutputOptions;
+}
+
+interface NgRollupInputOptions {
+  treeshake?: boolean;
+  external?: string[];
+  onwarn(warning: any): void;
+}
+
+interface NgRollupOutputOptions {
+  sourcemap?: boolean;
+  exports?: string;
+  globals?: any;
+}
+
+interface NgRollupOptions {
+  inputOptions?: NgRollupInputOptions;
+  outputOptions?: NgRollupOutputOptions;
 }
 
 interface PkgOptions {
@@ -114,6 +131,37 @@ function createRollupConfig(options: RollupOptions) {
   }
 }
 
+function createNgRollupConfig(tmpSrc: string, dest: string, options?: NgRollupOptions) {
+  const formats = [ 'esm2015', 'esm5', 'umd' ];
+
+  const folder = basename(tmpSrc);
+
+  return formats.map(format => {
+    const inputFile = (!(format.includes('umd'))) 
+      ? join('.tmp', folder, format, `${folder}.js`) 
+      : join('.tmp', folder, 'esm5', `${folder}.js`)
+
+    const file = (!(format.includes('umd'))) 
+      ? inputFile.replace('.tmp', dest)
+      : join(dest, folder, 'bundles', `${folder}.umd.js`);
+
+    const formatType = (format.includes('umd') ? 'umd' : 'es');
+
+    return {
+      inputOptions: {
+        input: inputFile,
+        ...options.inputOptions
+      },
+      outputOptions: {
+        name: folder, 
+        file: file, 
+        format: formatType,
+        ...options.outputOptions
+      }
+    }
+  })
+}
+
 async function rollupBuild({ inputOptions, outputOptions }): Promise<any> {
   return rollup(inputOptions).then(bundle => bundle.write(outputOptions));
 }
@@ -154,6 +202,46 @@ async function buildCopyPackageFile(name: string, pkgOptions?: PkgOptions) {
 async function copyReadMe(file?: string){
   const pathFile = (file) ? resolve(file): join(process.env.APP_ROOT_PATH, 'README.md');
   return copyFileAsync(pathFile, join(process.env.APP_ROOT_PATH, 'dist', basename(pathFile)));
-} 
+}
 
-export { buildCopyPackageFile, copyReadMe, rollupBuild, RollupOptions, RollupOutputOptions, createRollupConfig, rollupGenerate, PkgOptions, rollupPluginUglify } 
+async function ngxBuild(pkgName: string, rollupConfig: any) {
+  const ENTRY_FILE = `.tmp/${pkgName}.ts`;
+
+  const files = await globFiles('src/**/*.*');
+
+  const filter = file => extname(file) === '.ts';
+  const map = file => `export * from '${file.replace(join(resolve(), sep, 'src', sep), './').replace('.ts', '')}';`;
+  const sourceFiles = files.filter(filter).map(map).join('\n');
+
+  await Promise.all([ clean('.tmp'), clean('dist') ]);
+
+  await mkdirp('.tmp');
+
+  await Promise.all([
+    Promise.all(files.map(file => {
+      const destPath = file.replace('src', '.tmp');
+      return copyFileAsync(file, destPath);
+    })),
+    writeFileAsync(ENTRY_FILE, sourceFiles),
+    buildCopyPackageFile(pkgName)
+  ])
+
+  await rollupBuild(rollupConfig);
+}
+
+export { 
+  buildCopyPackageFile, 
+  copyReadMe, 
+  rollupBuild, 
+  RollupOptions, 
+  RollupOutputOptions, 
+  createRollupConfig, 
+  rollupGenerate, 
+  PkgOptions, 
+  rollupPluginUglify,
+  ngxBuild,
+  NgRollupOptions,
+  NgRollupOutputOptions,
+  NgRollupInputOptions,
+  createNgRollupConfig
+} 
