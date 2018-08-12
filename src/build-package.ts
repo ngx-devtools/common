@@ -9,6 +9,23 @@ if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
 }
 
+const defaultExternals: string[] = [ 
+  'fs', 
+  'util', 
+  'path', 
+  'tslib', 
+  'node-sass', 
+  'terser', 
+  'livereload', 
+  'chokidar', 
+  'rollup', 
+  'rollup-plugin-node-resolve',
+  'rollup-plugin-typescript2',
+  'rollup-plugin-multi-entry',
+  'rollup-plugin-commonjs',
+  'stream'
+];
+
 interface RollupOutputOptions {
   file?: string;
   format?: string;
@@ -28,46 +45,12 @@ interface RollupOptions {
   output: RollupOutputOptions;
 }
 
-interface NgRollupInputOptions {
-  treeshake?: boolean;
-  external?: string[];
-  onwarn(warning: any): void;
-}
-
-interface NgRollupOutputOptions {
-  sourcemap?: boolean;
-  exports?: string;
-  globals?: any;
-}
-
-interface NgRollupOptions {
-  inputOptions?: NgRollupInputOptions;
-  outputOptions?: NgRollupOutputOptions;
-}
-
 interface PkgOptions {
   module?: string;
   esm2015?: string;
   typings?: string;
   main?: string;
 }
-
-const defaultExternals: string[] = [ 
-  'fs', 
-  'util', 
-  'path', 
-  'tslib', 
-  'node-sass', 
-  'terser', 
-  'livereload', 
-  'chokidar', 
-  'rollup', 
-  'rollup-plugin-node-resolve',
-  'rollup-plugin-typescript2',
-  'rollup-plugin-multi-entry',
-  'rollup-plugin-commonjs',
-  'stream'
-];
 
 function rollupExternals(options: RollupOptions) {
   return (options.external && Array.isArray(options.external))
@@ -129,37 +112,6 @@ function createRollupConfig(options: RollupOptions) {
       ...options.output
     }
   }
-}
-
-function createNgRollupConfig(tmpSrc: string, dest: string, options?: NgRollupOptions) {
-  const formats = [ 'esm2015', 'esm5', 'umd' ];
-
-  const folder = basename(tmpSrc);
-
-  return formats.map(format => {
-    const inputFile = (!(format.includes('umd'))) 
-      ? join('.tmp', folder, format, `${folder}.js`) 
-      : join('.tmp', folder, 'esm5', `${folder}.js`)
-
-    const file = (!(format.includes('umd'))) 
-      ? inputFile.replace('.tmp', dest)
-      : join(dest, folder, 'bundles', `${folder}.umd.js`);
-
-    const formatType = (format.includes('umd') ? 'umd' : 'es');
-
-    return {
-      inputOptions: {
-        input: inputFile,
-        ...options.inputOptions
-      },
-      outputOptions: {
-        name: folder, 
-        file: file, 
-        format: formatType,
-        ...options.outputOptions
-      }
-    }
-  })
 }
 
 async function rollupBuild({ inputOptions, outputOptions }): Promise<any> {
@@ -239,9 +191,5 @@ export {
   rollupGenerate, 
   PkgOptions, 
   rollupPluginUglify,
-  ngxBuild,
-  NgRollupOptions,
-  NgRollupOutputOptions,
-  NgRollupInputOptions,
-  createNgRollupConfig
+  ngxBuild
 } 
