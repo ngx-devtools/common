@@ -35,3 +35,16 @@ Re-usable function or utilities
   const { mkdirp } = require('@ngx-devtools/common');
   mkdirp('dist');
   ```
+
+### Node util.promisify
+- Convert the Node File API to Promise using util.promisify
+
+  * `statAsync`
+  * `readFileAsync`
+  * `writeFileAsync`
+  * `lstatAsync`
+  * `unlinkAsync`
+  * `copyFileAsync`
+  * `symlinkAsync`
+  * `rmdirAsync`
+  * `renameAsync`
