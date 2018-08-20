@@ -25,6 +25,11 @@ interface NgRollupConfigOptions {
   options: NgRollupOptions;
 }
 
+/**
+ * Create Angular Rollup Config
+ * @param configs - metadata of configs
+ * @return - rollup input and output
+ */
 function createNgRollupConfig(configs: NgRollupConfigOptions) {
   const { format, dest, options, tmpSrc, minify } = configs;
 
