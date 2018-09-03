@@ -58,7 +58,6 @@ async function inlineHtml(content: string, tr: any) {
     stream.on('error', reject);
   }).then((chunks: any[]) => {
     const styles = chunks.filter(_ => _.includes('<style>'));
-    
     return Promise.resolve(chunks.join('')) 
   });
 }
@@ -158,7 +157,7 @@ async function jsScripts(content: string){
 
 async function insertOtherScript(content: string) {
   const scripts = Devtools.config.build['scripts'];
-  return (scripts && Array.isArray(scripts)) 
+  return (Devtools.config.build && scripts && Array.isArray(scripts)) 
     ? Promise.resolve(content.replace('<!-- scripts -->', 
         scripts.map((script, index) => {
           const value = `<script src="${script}"></script>`;
