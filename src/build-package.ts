@@ -87,7 +87,7 @@ function createRollupConfig(options: RollupOptions) {
   const plugins = [ 
     multiEntry(), 
     typescript({ ...tsOptions }), 
-    depsResolve() 
+    depsResolve({ module: true, jsnext: true, main: true }) 
   ];
 
   if (options.plugins) {

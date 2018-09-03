@@ -5,6 +5,7 @@ import { readFileAsync, writeFileAsync } from './file';
 import { isProcess } from './check-args';
 import { buildSass } from './inline-sources';
 import { PassThrough } from 'stream';
+import { Devtools } from './devtools';
 
 const trumpet = require('trumpet');
 const strip = require('strip-comments');
@@ -41,14 +42,24 @@ function urlResolver(p: string) {
     : resolve(process.env.APP_ROOT_PATH, p);
 }
 
+async function createStyles(content: string, styles: string[]) {
+  const contents = styles.map(style => style.replace('<style>', '').replace('</style>', ''));
+  return Promise.all([ 
+    content.replace('<!-- styles -->', '<link rel="stylesheet" href="styles.css">'),
+    writeFileAsync('dist/styles.css', contents)
+  ])
+}
+
 async function inlineHtml(content: string, tr: any) {
   return new Promise((resolve, reject) => {
     const stream = streamContent(content).pipe(tr), chunks = [];
     stream.on('data', chunk => chunks.push(chunk.toString()));
-    stream.on('end', () => resolve(chunks.join('')))
+    stream.on('end', () => resolve(chunks))
     stream.on('error', reject);
-  }).then((content: string) => {
-    return Promise.resolve(content) 
+  }).then((chunks: any[]) => {
+    const styles = chunks.filter(_ => _.includes('<style>'));
+    
+    return Promise.resolve(chunks.join('')) 
   });
 }
 
@@ -123,8 +134,13 @@ async function inlineLinkStyle(content: string) {
     const filePath = urlResolver(join('src', href));
     const contents = await readFileAsync(filePath, 'utf8').then(content => {
       return buildSass(content, filePath)
-        .replace(/([\n\r]\s*)+/gm," ")
-        .replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//gm, '')
+        .replace(/([\n\r]\s*)+/g, '')
+        .replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//g, '')
+        .replace(/\s\s\s\s\s\s/g, '')
+        .replace(/\s\s/g, '')
+        .replace(/@custom-media/g, function(match, i) {
+          return ' ' + match;
+        })
     });
     w.write('<style>' + contents + '</style>');
     w.end();
@@ -136,8 +152,19 @@ async function jsScripts(content: string){
   return isProcess(prodModeParams)
     ? injectPolyfills(content)
         .then(content => inlineScript(content))
-        .then(content => content.replace(/([\n\r]*)+/gm,""))
+        .then(content => content.replace(/([\n\r]*)+/g,""))
     : injectShims(content)
+}
+
+async function insertOtherScript(content: string) {
+  const scripts = Devtools.config.build['scripts'];
+  return (scripts && Array.isArray(scripts)) 
+    ? Promise.resolve(content.replace('<!-- scripts -->', 
+        scripts.map((script, index) => {
+          const value = `<script src="${script}"></script>`;
+          return (index === 0) ? value: '\t\t' + value;
+        }).join('\n')))
+    : Promise.resolve();
 }
 
 async function injectHtml(html: string){
@@ -147,6 +174,7 @@ async function injectHtml(html: string){
     .then(content => inlineLinkStyle(content))
     .then(content => injectTitle(content))
     .then(content => jsScripts(content))
+    .then(content => insertOtherScript(content))
     .then(content => writeFileAsync(html, content))
 }
 
