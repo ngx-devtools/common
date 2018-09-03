@@ -58,7 +58,6 @@ async function inlineHtml(content: string, tr: any) {
     stream.on('error', reject);
   }).then((chunks: any[]) => {
     const styles = chunks.filter(_ => _.includes('<style>'));
-    
     return Promise.resolve(chunks.join('')) 
   });
 }
@@ -129,21 +128,23 @@ async function inlineScript(content: string){
 async function inlineLinkStyle(content: string) {
   const tr = trumpet();
   tr.selectAll('link[href]', async function (node) {
-    const href = node.getAttribute('href').toLowerCase();
-    const w = node.createWriteStream({ outer: true });
-    const filePath = urlResolver(join('src', href));
-    const contents = await readFileAsync(filePath, 'utf8').then(content => {
-      return buildSass(content, filePath)
-        .replace(/([\n\r]\s*)+/g, '')
-        .replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//g, '')
-        .replace(/\s\s\s\s\s\s/g, '')
-        .replace(/\s\s/g, '')
-        .replace(/@custom-media/g, function(match, i) {
-          return ' ' + match;
-        })
-    });
-    w.write('<style>' + contents + '</style>');
-    w.end();
+    if (!(node.getAttribute('type'))) {
+      const href = node.getAttribute('href').toLowerCase();
+      const w = node.createWriteStream({ outer: true });
+      const filePath = urlResolver(join('src', href));
+      const contents = await readFileAsync(filePath, 'utf8').then(content => {
+        return buildSass(content, filePath)
+          .replace(/([\n\r]\s*)+/g, '')
+          .replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//g, '')
+          .replace(/\s\s\s\s\s\s/g, '')
+          .replace(/\s\s/g, '')
+          .replace(/@custom-media/g, function(match, i) {
+            return ' ' + match;
+          })
+      });
+      w.write('<style>' + contents + '</style>');
+      w.end();
+    }
   });
   return inlineHtml(content, tr);
 }
@@ -158,13 +159,13 @@ async function jsScripts(content: string){
 
 async function insertOtherScript(content: string) {
   const scripts = Devtools.config.build['scripts'];
-  return (scripts && Array.isArray(scripts)) 
+  return (Devtools.config.build && scripts && Array.isArray(scripts)) 
     ? Promise.resolve(content.replace('<!-- scripts -->', 
         scripts.map((script, index) => {
           const value = `<script src="${script}"></script>`;
           return (index === 0) ? value: '\t\t' + value;
         }).join('\n')))
-    : Promise.resolve();
+    : Promise.resolve(content);
 }
 
 async function injectHtml(html: string){
