@@ -28,6 +28,10 @@ class Devtools {
     return this._devtools['build'] || {};
   }
 
+  get modules() {
+    return this._devtools['modules'] || {};
+  }
+
 }
 
 export { Devtools }
