@@ -3,7 +3,7 @@ import { existsSync } from 'fs';
 
 import { readFileAsync, writeFileAsync } from './file';
 import { isProcess } from './check-args';
-import { buildSass } from './inline-sources';
+import { buildSass, getStyleContent } from './inline-sources';
 import { PassThrough } from 'stream';
 import { Devtools } from './devtools';
 
@@ -42,12 +42,23 @@ function urlResolver(p: string) {
     : resolve(process.env.APP_ROOT_PATH, p);
 }
 
-async function createStyles(content: string, styles: string[]) {
-  const contents = styles.map(style => style.replace('<style>', '').replace('</style>', ''));
-  return Promise.all([ 
-    content.replace('<!-- styles -->', '<link rel="stylesheet" href="styles.css">'),
-    writeFileAsync('dist/styles.css', contents)
-  ])
+function stripSpaces(value: string) {
+  return value
+    .replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '')
+    .replace(/([\n\r]\s*)+/g, '')
+    .replace(/\s{6}|\s{2}|\s{1}/g, '')
+    .replace(/"/g, '\\"')
+    .replace(/@custom-media/g, function(match, i) {
+      return ' ' + match + ' ';
+    })
+}
+
+async function createStyles(content: string) {
+  const styles: string[] = (Devtools.config.build && Devtools.config.build['styles']) ? Devtools.config.build.styles: [];
+  const contents = styles.map(style => getStyleContent(style, urlResolver)).join(' ')
+  return Promise.resolve(contents 
+      ? content.replace('<!-- styles -->', `<style>${stripSpaces(contents)}</style>`)
+      : content);
 }
 
 async function inlineHtml(content: string, tr: any) {
@@ -171,6 +182,7 @@ async function insertOtherScript(content: string) {
 async function injectHtml(html: string){
   return readFileAsync(html, 'utf8')
     .then(content => isProcess(liveReloadParams) ? injectLivereload(content) : Promise.resolve(content))
+    .then(content => createStyles(content))
     .then(content => injectSystemjsScript(content))
     .then(content => inlineLinkStyle(content))
     .then(content => injectTitle(content))
