@@ -7,6 +7,18 @@ if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
 }
 
+function stripSpaces(value: string) {
+  return value
+    .replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '')
+    .replace(/([\n\r]\s*)+/g, '')
+    .replace(/\s{6}|\s{2}|\s{1}|\s{14}|\s{8}|\s{4}|\s{10}|\s{12}|\s{16}/g, '')
+    .replace(/"/g, '\\"')
+    .replace(/@custom-media/g, function(match, i) {
+      return ' ' + match + ' ';
+    })
+    .replace(/\s/gm, '')
+}
+
 function buildSass(content: string, srcFile: string): string {
   return srcFile.endsWith('.scss') 
     ? sass.renderSync({ data: content, file: srcFile, outputStyle: 'compressed' }).css.toString() 
@@ -17,7 +29,7 @@ function getStyleContent(styleUrl: string, urlResolver: Function): string {
   const styleFile = urlResolver(styleUrl);
   const originContent = readFileSync(styleFile, 'utf8');
   const styleContent = buildSass(originContent, styleFile);
-  return styleContent.replace(/([\n\r]\s*)+/gm, ' ').replace(/"/g, '\\"');
+  return stripSpaces(styleContent);
 }
 
 function inlineStyle(content: string, urlResolver: Function): string {
@@ -34,7 +46,7 @@ function inlineStyle(content: string, urlResolver: Function): string {
 function inlineHtmlTemplate(content: string, urlResolver: Function): string {
   return content.replace(/templateUrl:\s*'([^']+?\.html)'/g, function (m, templateUrl) {
     const templateFile = urlResolver(templateUrl);
-    const shortenedTemplate = readFileSync(templateFile, 'utf8').replace(/([\n\r]\s*)+/gm, ' ').replace(/"/g, '\\"');
+    const shortenedTemplate = readFileSync(templateFile, 'utf8').replace(/([\n\r]\s*)+/g, ' ').replace(/"/g, '\\"')
     return `template: "${shortenedTemplate}"`;
   });
 }
@@ -73,4 +85,4 @@ async function inlineSources(src: string | string[], dest: string) {
   })
 }
 
-export { inlineSources, inlineHtmlTemplate, buildSass, getStyleContent, inlineStyle, inlineResource, inlineResourcesFromString  } 
+export { inlineSources, inlineHtmlTemplate, buildSass, getStyleContent, inlineStyle, inlineResource, inlineResourcesFromString, stripSpaces  } 

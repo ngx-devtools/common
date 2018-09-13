@@ -3,7 +3,7 @@ import { existsSync } from 'fs';
 
 import { readFileAsync, writeFileAsync } from './file';
 import { isProcess } from './check-args';
-import { buildSass, getStyleContent } from './inline-sources';
+import { buildSass, getStyleContent, stripSpaces } from './inline-sources';
 import { PassThrough } from 'stream';
 import { Devtools } from './devtools';
 
@@ -40,17 +40,6 @@ function urlResolver(p: string) {
   return (isAbsolute(p)) 
     ? resolve(process.env.APP_ROOT_PATH, relative('/', p))
     : resolve(process.env.APP_ROOT_PATH, p);
-}
-
-function stripSpaces(value: string) {
-  return value
-    .replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '')
-    .replace(/([\n\r]\s*)+/g, '')
-    .replace(/\s{6}|\s{2}|\s{1}/g, '')
-    .replace(/"/g, '\\"')
-    .replace(/@custom-media/g, function(match, i) {
-      return ' ' + match + ' ';
-    })
 }
 
 async function createStyles(content: string) {
@@ -191,4 +180,4 @@ async function injectHtml(html: string){
     .then(content => writeFileAsync(html, content))
 }
 
-export { injectLivereload, injectShims, injectSystemjsScript, injectTitle, injectHtml, trumpet, inlineLinkStyle, inlineScript }
+export { injectLivereload, injectShims, injectSystemjsScript, injectTitle, injectHtml, trumpet, inlineLinkStyle, inlineScript, urlResolver }
