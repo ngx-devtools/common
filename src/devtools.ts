@@ -24,6 +24,18 @@ class Devtools {
     this._devtools = devtools;
   }
 
+  get title() {
+    return this._devtools['title'] || {};
+  }
+
+  get favicon() {
+    return this._devtools['favicon'] || {};
+  }
+
+  get server() {
+    return this._devtools['server'] || {};
+  }
+
   get build() {
     return this._devtools['build'] || {};
   }

@@ -46,7 +46,7 @@ async function createStyles(content: string) {
   const styles: string[] = (Devtools.config.build && Devtools.config.build['styles']) ? Devtools.config.build.styles: [];
   const contents = styles.map(style => getStyleContent(style, urlResolver)).join(' ')
   return Promise.resolve(contents 
-      ? content.replace('<!-- styles -->', `<style>${stripSpaces(contents)}</style>`)
+      ? content.replace('<!-- styles -->', `<style>${contents}</style>`)
       : content);
 }
 
@@ -134,15 +134,8 @@ async function inlineLinkStyle(content: string) {
       const filePath = urlResolver(join('src', href));
       const contents = await readFileAsync(filePath, 'utf8').then(content => {
         return buildSass(content, filePath)
-          .replace(/([\n\r]\s*)+/g, '')
-          .replace(/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\//g, '')
-          .replace(/\s\s\s\s\s\s/g, '')
-          .replace(/\s\s/g, '')
-          .replace(/@custom-media/g, function(match, i) {
-            return ' ' + match;
-          })
       });
-      w.write('<style>' + contents + '</style>');
+      w.write('<style>' + stripSpaces(contents) + '</style>');
       w.end();
     }
   });

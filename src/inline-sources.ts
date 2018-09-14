@@ -7,16 +7,10 @@ if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
 }
 
+const uglifycss = require('uglifycss');
+
 function stripSpaces(value: string) {
-  return value
-    .replace(/(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/g, '')
-    .replace(/([\n\r]\s*)+/g, '')
-    .replace(/\s{6}|\s{2}|\s{1}|\s{14}|\s{8}|\s{4}|\s{10}|\s{12}|\s{16}/g, '')
-    .replace(/"/g, '\\"')
-    .replace(/@custom-media/g, function(match, i) {
-      return ' ' + match + ' ';
-    })
-    .replace(/\s/gm, '')
+  return uglifycss.processString(value).replace(/@custom-media/g, (match, i) => ' ' + match + ' ');
 }
 
 function buildSass(content: string, srcFile: string): string {
