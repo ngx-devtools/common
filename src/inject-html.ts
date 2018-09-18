@@ -62,7 +62,7 @@ async function inlineHtml(content: string, tr: any) {
   });
 }
 
-async function injectLivereload(content: string){
+async function injectLivereload(content: string) {
   const defaults = {
     port: 35729,
     host: 'http://\' + (location.host || "localhost").split(":")[0] + \'',
@@ -76,7 +76,7 @@ async function injectLivereload(content: string){
   return Promise.resolve(content.replace(LIVERELOAD, template(defaults)));
 }
 
-async function injectShims(content: string){
+async function injectShims(content: string) {
   const shimsPath = join(argv.vendorRootDir, 'shims.min.js');
   return existsSync(join(process.env.APP_ROOT_PATH, shimsPath))
     ? Promise.resolve(content.replace(SHIMS, `<script src="${shimsPath}"></script>`))
@@ -98,19 +98,19 @@ async function injectPolyfills(content: string) {
   return Promise.resolve(content);
 }
 
-async function injectSystemjsScript(content: string){
+async function injectSystemjsScript(content: string) {
   const systemjsPath = join(process.env.APP_ROOT_PATH, argv.vendorRootDir, `systemjs-script.min.js`);
   return existsSync(systemjsPath)
     ? readFileAsync(systemjsPath, 'utf8').then(fileContent => content.replace(SYSTEMJS, `<script>${fileContent}</script>`))
     : Promise.resolve(content);
 }
 
-async function injectTitle(content: string){
+async function injectTitle(content: string) {
   const title = DEVTOOLS_CONFIG['title'];
   return Promise.resolve(content.replace(TITLE, title ? title : 'NGX AppSeed Application'));
 }
 
-async function inlineScript(content: string){
+async function inlineScript(content: string) {
   const tr = trumpet();
   tr.selectAll('script[src]', async function(node){
     const src = node.getAttribute('src').toLowerCase();
@@ -142,7 +142,7 @@ async function inlineLinkStyle(content: string) {
   return inlineHtml(content, tr);
 }
 
-async function jsScripts(content: string){
+async function jsScripts(content: string) {
   return isProcess(prodModeParams)
     ? injectPolyfills(content)
         .then(content => inlineScript(content))
