@@ -30,7 +30,7 @@ function inlineStyle(content: string, urlResolver: Function): string {
   return content.replace(/styleUrls\s*:\s*(\[[\s\S]*?\])/gm, function(m, styleUrls) {
     const urls = JSON.parse(JSON.stringify(styleUrls).replace(/"/g, "").replace(/'/g, '"'))
     return 'styles: ['
-    + urls.map(styleUrl => `"${getStyleContent(styleUrl, urlResolver)}"`)
+    + urls.map(styleUrl => '`' + getStyleContent(styleUrl, urlResolver) + '`')
         .join(',\n')
         .replace('\n', ' ')
     + ']';
@@ -40,8 +40,8 @@ function inlineStyle(content: string, urlResolver: Function): string {
 function inlineHtmlTemplate(content: string, urlResolver: Function): string {
   return content.replace(/templateUrl:\s*'([^']+?\.html)'/g, function (m, templateUrl) {
     const templateFile = urlResolver(templateUrl);
-    const shortenedTemplate = readFileSync(templateFile, 'utf8').replace(/([\n\r]\s*)+/g, ' ').replace(/"/g, '\\"')
-    return `template: "${shortenedTemplate}"`;
+    const shortenedTemplate = readFileSync(templateFile, 'utf8').replace(/([\n\r]\s*)+/g, ' ').replace(/"/g, '\\"');
+    return 'template: ' + '`' + `${shortenedTemplate}` + '`';
   });
 }
 
