@@ -156,25 +156,34 @@ async function copyReadMe(file?: string){
   return copyFileAsync(pathFile, join(process.env.APP_ROOT_PATH, 'dist', basename(pathFile)));
 }
 
-async function ngxBuild(pkgName: string, rollupConfig: any) {
-  const ENTRY_FILE = `.tmp/${pkgName}.ts`;
+async function copyBuildFiles(files, folder) {
+  return Promise.all(files.map(file => {
+    const destPath = file.replace(join(process.env.APP_ROOT_PATH, 'src'), folder);
+    return copyFileAsync(file, destPath);
+  }))
+}
 
-  const files = await globFiles('src/**/*.*');
-
+async function writePackageEntry(entryFile: string, files: string[]) {
   const filter = file => extname(file) === '.ts';
-  const map = file => `export * from '${file.replace(join(resolve(), sep, 'src', sep), './').replace('.ts', '')}';`;
+  const map = file => `export * from '${file.replace(join(process.env.APP_ROOT_PATH, 'src', sep), './').replace('.ts', '')}';`;
   const sourceFiles = files.filter(filter).map(map).join('\n');
+  return writeFileAsync(entryFile, sourceFiles)
+}
 
-  await Promise.all([ clean('.tmp'), clean('dist') ]);
+async function ngxBuild(pkgName: string, rollupConfig: any) {
+  const rootFolder = process.env.APP_ROOT_PATH;
+  const tmpFolder = dirname(rollupConfig.inputOptions.input);
 
-  await mkdirp('.tmp');
+  const srcFilePath = join(rootFolder, 'src', '**', '*.*');
+  const files = await globFiles(srcFilePath);
+
+  await Promise.all([ clean(join(rootFolder, '.tmp')), clean(join(rootFolder, 'dist')) ]);
+
+  await mkdirp(tmpFolder);
 
   await Promise.all([
-    Promise.all(files.map(file => {
-      const destPath = file.replace('src', '.tmp');
-      return copyFileAsync(file, destPath);
-    })),
-    writeFileAsync(ENTRY_FILE, sourceFiles),
+    copyBuildFiles(files, tmpFolder),
+    writePackageEntry(rollupConfig.inputOptions.input, files),
     buildCopyPackageFile(pkgName)
   ])
 
