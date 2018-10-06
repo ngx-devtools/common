@@ -10,7 +10,9 @@ if (!(process.env.APP_ROOT_PATH)) {
 const uglifycss = require('uglifycss');
 
 function stripSpaces(value: string) {
-  return uglifycss.processString(value).replace(/@custom-media/g, (match, i) => ' ' + match + ' ');
+  return uglifycss.processString(value)
+    .replace(/@custom-media/g, (match, i) => ' ' + match + ' ')
+    .replace(/::slotted/g, (match, i) => ' ' + match + ' ')
 }
 
 function buildSass(content: string, srcFile: string): string {
