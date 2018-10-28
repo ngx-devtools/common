@@ -8,4 +8,4 @@ const isProcess = (list) => {
   return result;
 };
 
-exports.isProcess = isProcess;
+export { isProcess }
