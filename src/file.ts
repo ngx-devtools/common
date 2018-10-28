@@ -76,6 +76,7 @@ async function walkAsync(options: GlobFileOptions): Promise<string[]> {
 
 async function clean(dir: string): Promise<void> {
   if (existsSync(dir)) {
+    const rootFolder = resolve() + sep;
     const files = await readdirAsync(dir);
     await Promise.all(files.map(async (file) => {
       const p = join(dir, file);
@@ -83,14 +84,16 @@ async function clean(dir: string): Promise<void> {
       if (stat.isDirectory()) {
         await clean(p);
       } else {
-        await startAsync('clean', `Removed file ${p}`)
+        const filePath = p.replace(rootFolder, '');
+        await startAsync('clean', `Removed file ${filePath}`)
           .then(startTime => unlinkAsync(p).then(() => Promise.resolve(startTime)))
-          .then(startTime => doneAsync('clean', `Removed file ${p}`, startTime));
+          .then(startTime => doneAsync('clean', `Removed file ${filePath}`, startTime));
       }
     }));
-    await startAsync('clean', `Removed dir ${dir}`) 
+    const dirPath = dir.replace(rootFolder, '');
+    await startAsync('clean', `Removed dir ${dirPath}`) 
       .then(startTime => rmdirAsync(dir).then(() => Promise.resolve(startTime)))
-      .then(startTime => doneAsync('clean', `Removed dir ${dir}`, startTime));
+      .then(startTime => doneAsync('clean', `Removed dir ${dirPath}`, startTime));
   }
 }
 
