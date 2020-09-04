@@ -21,7 +21,7 @@
     "fast-memoize": "2.5.1",
     "gulp-livereload": "3.8.1",
     "mime": "2.3.1",
-    "node-sass": "4.9.2",
+    "node-sass": "4.14.1",
     "strip-comments": "1.0.2",
     "typescript": "2.7.2",
     "terser": "3.7.8"
